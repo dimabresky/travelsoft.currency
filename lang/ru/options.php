@@ -9,3 +9,4 @@ $MESS['TRAVELSOFT_CURRENCY_TAB_DESC'] = 'Настройки модуля вал�
 $MESS['TRAVELSOFT_CURRENCY_SAVE_BTN_NAME'] = 'Сохранить';
 $MESS['TRAVELSOFT_CURRENCY_RESET_BTN_NAME'] = 'Сбросить';
 $MESS['TRAVELSOFT_CURRENCY_RESTORE_WARNING'] = 'Вы уверены, что хотите сбросить настройки ?';
+$MESS['TRAVELSOFT_CURRENCY_COMMISSION'] = "Комиссия для #ISO# в процентах";
