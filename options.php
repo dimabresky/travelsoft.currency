@@ -116,32 +116,39 @@ foreach( $main_options as $name => $desc ):
         var html = '';
         
         for (var i = 0; i < currency.length; i++) {
-            if (currency[i][0] == that.value) {
-                document.getElementById('commission-for-' + currency[i][1]).innerHTML = '';
-                continue;
-            }
-            html = '';
-            html += '<td width="40%" class="adm-detail-content-cell-l">';
-            html += '<label for="COMMISSION_FOR[' + currency[i][1] + ']">'+title.replace("#ISO#", currency[i][1])+'</label>';
-            html += '</td>';
-            html += '<td width="60%" class="adm-detail-content-cell-r">';
-            html += '<input name="COMMISSION_FOR[' + currency[i][1] + ']" value="'+ ( commissions[currency[i][1]] || "" ) +'" type="text">';
-            html += '</td>';
-            document.getElementById('commission-for-' + currency[i][1]).innerHTML = html;
+
+            document.getElementById('commission-for-' + currency[i][1]).innerHTML =  getHtml(currency[i], commissions, title, currency[i][0] == that.value);
         }
         
+    }
+    // html ввода данных
+    function getHtml (c, com, t, hide) {
+        var html = '';
+        if (hide) {
+            html += '<td width="40%" style="display: none" class="adm-detail-content-cell-l">';
+        } else {
+            html += '<td width="40%" class="adm-detail-content-cell-l">';
+        }
+        html += '<label for="COMMISSION_FOR[' + c[1] + ']">'+t.replace("#ISO#", c[1])+'</label>';
+        html += '</td>';
+        if (hide) {
+            html += '<td width="60%" style="display: none" class="adm-detail-content-cell-r">';
+        } else {
+            html += '<td width="40%" class="adm-detail-content-cell-r">';
+        }
+        html += '<input name="COMMISSION_FOR[' + c[1] + ']" value="'+ ( com[c[1]] || "" ) +'" type="text">';
+        html += '</td>';
+        return html;
     }
     </script>    
     
     <?foreach ($desc['def'] as $val):?>
-    <?if ($val[0] == $cur_opt_val):?>
-    <tr id="commission-for-<?= $val[1]?>"></tr>
-    <?continue; endif?>
+    <?$style = ""; if ($val[0] == $cur_opt_val) {$style = 'style="display:none"';}?>
     <tr id="commission-for-<?= $val[1]?>">
-        <td width="40%">
+        <td width="40%" <?= $style?>>
             <label for="COMMISSION_FOR[<?= $val[1]?>]"><?= Loc::getMessage("TRAVELSOFT_CURRENCY_COMMISSION", array("#ISO#" => $val[1]))?></label>
         </td>
-        <td width="60%">
+        <td width="60%" <?= $style?>>
             <input name="COMMISSION_FOR[<?= $val[1]?>]" value="<?= $commissions[$val[1]]?>" type="text">
         </td>
     </tr>
