@@ -7,7 +7,6 @@ use Bitrix\Main\Localization\Loc;
 Loc::loadMessages(__FILE__);
 CJSCore::Init(array("jquery"));
 
-$html_currency_add = "<tr><td>". Loc::getMessage('TRAVELSOFT_CURRENCY_ADD_CURRENCY_NAME') ."<input type='text' name='currency[names][]' value='' size='20' ></td><td>". Loc::getMessage('TRAVELSOFT_CURRENCY_ADD_CURRENCY_VALUE') ."<input type='text' name='currency[iso][]' value='' size='20' ></td></tr>";
 $html_course_add = "<tr><td>". Loc::getMessage('TRAVELSOFT_CURRENCY_ADD_COURSE_CURRENCY_NAME') ."<input type='text' name='course[iso][]' value='' size='20' ></td><td>". Loc::getMessage('TRAVELSOFT_CURRENCY_ADD_COURSE_CURRENCY_VALUE') ."<input type='text' name='course[values][]' value='' size='20' ></td></tr>";
 ?>
 <style>
@@ -44,15 +43,7 @@ $html_course_add = "<tr><td>". Loc::getMessage('TRAVELSOFT_CURRENCY_ADD_COURSE_C
 </style>
 
 <script>
-    function addCurrency (jqbtn) {
-        
-        var html = "<?= $html_currency_add?>";
-
-        jqbtn.parent().parent().before(html);
-        
-        return false;
-    }
-    
+   
     function addCourse (jqbtn) {
         var html = "<?= $html_course_add?>";
 
@@ -74,16 +65,22 @@ if (!empty($GLOBALS['ERRORS_FORM'])) {
     <input type="hidden" name="install" value="Y">
     <input type="hidden" name="step" value="next">
     
+    
     <table class="pre-options" cellpadding="3" cellspacing="0" border="0" width="100%">
         
         <tr class="notice">
             <td colspan="2"><i><?= Loc::getMessage('TRAVELSOFT_CURRENCY_NOTICE')?></i></td>
 	</tr>
         
+        <tr>
+            <td><b>Введите ISO код базовой валюты</b></td>
+            <td><input required="" type="text" name="course[iso][]" value="BYN"><input type="hidden" name="course[values][]" value="1"></td>
+        </tr>
+        
         <tr class="hr">
             <td colspan="2"><b><?= Loc::getMessage('TRAVELSOFT_CURRENCY_ADD_CURRENCY_TITLE')?></b></td>
 	</tr>
-        
+
         <?= str_repeat($html_course_add, 5)?>
         
         <tr class='button-add'>

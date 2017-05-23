@@ -302,6 +302,8 @@ class travelsoft_currency extends CModule
                 
                 $this->setFormatOptions();
                 
+                Option::set($this->MODULE_ID, 'COMMISSIONS', "");
+                
                 return true;
             } 
             
@@ -321,9 +323,12 @@ class travelsoft_currency extends CModule
     
     public function DoUninstall()
     {
+        
         $this->unsetFormatOptions();
         $this->unsetCoursesStore();
         $this->unsetCurrencyStore();
+        
+        Option::delete($this->MODULE_ID, array('name' => 'COMMISSIONS'));
         
         // unregister module
         ModuleManager::UnRegisterModule($this->MODULE_ID);
