@@ -4,10 +4,11 @@ namespace travelsoft\currency;
 
 use travelsoft\currency\Settings;
 use travelsoft\currency\Result;
-use travelsoft\currency\stores\Courses;
-use travelsoft\currency\stores\Currencies;
 use travelsoft\currency\Course;
 use travelsoft\currency\Currency;
+use travelsoft\currency\stores\Courses;
+use travelsoft\currency\stores\Currencies;
+
 
 /**
  * Класс конвертер валюты (Singleton)
@@ -18,7 +19,7 @@ use travelsoft\currency\Currency;
 class Converter {
     
     /**
-     * @var $this 
+     * @var self 
      */
     protected $instance = null;
     
@@ -54,7 +55,7 @@ class Converter {
     
     /**
      * Возвращает объект класса
-     * @return $this
+     * @return self
      */
     public function getInstance () : self {
         if (!self::$instance) {
