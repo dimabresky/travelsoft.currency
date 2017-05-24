@@ -125,7 +125,7 @@ class Converter {
     /**
      * Инициализация объекта класса из настроек модуля
      */
-    protected function _initDefault () {
+    public function initDefault () {
         
         $defaultCurrency = Settings::defaultCurrency();
         $this->currencies[$defaultCurrency->ISO] = $defaultCurrency;
