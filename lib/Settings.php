@@ -72,6 +72,14 @@ class Settings {
     }
     
     /**
+     * Возвращает комиссию по валютам
+     * @return array
+     */
+    public static function commissions() : array {
+        return (array)\travelsoft\sta(options::get("travelsoft.currency", "COMMISSIONS"));
+    }
+    
+    /**
      * Возвращает объект валюты по-умолчанию
      * @return \stdClass
      */
@@ -79,12 +87,25 @@ class Settings {
         
         $arCurrencies = Currencies::get();
         $arCourse = current(Courses::get(array("filter" => array("ID" => self::currentCourseId()))));
-  
+        
+        $arCommissions = self::commissions();
+        
         $currency = new Currency((string)$arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"], $arCourse["UF_BASE_ID"]);
-        foreach ($arCurrencies as $arCurrency) {
+        
+        if (!empty($arCommissions)) {
+            
+            foreach ($arCurrencies as $arCurrency) {
+                
+                $value = $arCourse["UF_" . $arCurrency["UF_ISO"]];
+                if (!$arCourse["UF_BASE_ID"] !== $arCurrency["ID"] && $arCommissions[$arCurrency["UF_ISO"]] > 0) {
+                    # расчёт курса с комиссией
+                    $value += $value*($arCurrency["UF_ISO"]/100);
+                }
+                $currency->addCourse($arCurrency["UF_ISO"], new Course($value, $arCourse["UF_DATE"]));
+            }
+        } else {
             $currency->addCourse($arCurrency["UF_ISO"], new Course($arCourse["UF_" . $arCurrency["UF_ISO"]], $arCourse["UF_DATE"]));
         }
-
         
         return $currency;
     }
