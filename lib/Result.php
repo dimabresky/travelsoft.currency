@@ -35,7 +35,7 @@ class Result {
      * Возвращает отформатированный результат конвертации цены
      * @return string
      */
-    public function format () : string {
+    public function getFormatted () : string {
         return  (string)number_format(
                     $this->price,
                     Settings::formatDecimal(),
