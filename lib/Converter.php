@@ -111,10 +111,10 @@ class Converter {
     /**
      * Возвращает объект валюты по id или ISO коду
      * @param string $val
-     * @return \stdClass
+     * @return Currency
      * @throws \Exception
      */
-    public function getCurrency (string $val) : \stdClass {
+    public function getCurrency (string $val) : Currency {
         
         if ( !($currency = $this->_findCurrency($val)) ) {
             throw new \Exception(get_called_class() . ': The currency "'.$val.'" not found');
@@ -157,9 +157,9 @@ class Converter {
     /**
      * Возвращает объект валюты по id
      * @param int $id
-     * @return \stdClass
+     * @return \stdClass|Currency
      */
-    protected function _findById (int $id) : \stdClass {
+    protected function _findById (int $id) {
         
         foreach ($this->currencies as $currency) {
             if ($id === $currency->ISO) { return $currency; }
@@ -170,22 +170,22 @@ class Converter {
     /**
      * Возвращает объект валюты по iso коду
      * @param string $ISO
-     * @return \stdClass
+     * @return \stdClass|Currency
      */
-    protected function _findByISO (string $ISO) : \stdClass {
+    protected function _findByISO (string $ISO) {
         
         if ($this->currencies[$ISO]) {
             return $this->currencies[$ISO];
         }
-        return \stdClass;
+        return new \stdClass;
     }
     
     /**
      * Возвращает объект валюты по id или ISO коду
      * @param string $val
-     * @return \stdClass
+     * @return Currency
      */
-    protected function _findCurrency (string $val) : \stdClass {
+    protected function _findCurrency (string $val) {
         
         if ( !($currency = $this->_findById(intVal($val))) ) {
             $currency = $this->_findByISO($val);
@@ -193,7 +193,7 @@ class Converter {
         if ($currency->ISO) {
             return $currency;
         }
-        return \stdClass;
+        return new \stdClass;
     }
     
 }
