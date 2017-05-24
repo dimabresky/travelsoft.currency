@@ -1,6 +1,6 @@
 <?php
 $MESS['TRAVELSOFT_CURRENCY_BASE_CURRENCY_ID'] = 'Базовая валюта';
-$MESS['TRAVELSOFT_CURRENCY_BASE_COURSES_ID'] = 'Базовый курс валюты';
+$MESS['TRAVELSOFT_CURRENCY_BASE_COURSES_ID'] = 'Текущий курс валюты';
 $MESS['TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DECIMAL'] = 'Количество десячичных знаков';
 $MESS['TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DEC_POINT'] = 'Разделитель дробной и целой части';
 $MESS['TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_THOUSANDS_SEP'] = 'Разделитель разрядов числа';

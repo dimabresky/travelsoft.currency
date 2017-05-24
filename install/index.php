@@ -231,7 +231,7 @@ class travelsoft_currency extends CModule
             $arSave["UF_" . $v[0]] = $v[1];
         }
         $ID = $dataClass::add($arSave)->getId();
-        Option::set($this->MODULE_ID, "BASE_COURSE_ID", $ID);
+        Option::set($this->MODULE_ID, "CURRENT_COURSE_ID", $ID);
     }
     
     public function makeCurrencyStore () {
@@ -279,7 +279,7 @@ class travelsoft_currency extends CModule
             Bitrix\Highloadblock\HighloadBlockTable::delete($COURSES_HL_ID);
             Option::delete($this->MODULE_ID, array('name' => 'COURSES_HL_ID'));
         }
-        Option::delete($this->MODULE_ID, array('name' => 'BASE_COURSE_ID'));
+        Option::delete($this->MODULE_ID, array('name' => 'CURRENT_COURSE_ID'));
     }
     
     public function DoInstall()

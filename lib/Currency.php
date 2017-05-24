@@ -20,7 +20,7 @@ class Currency extends Getter{
     /**
      * @var string
      */
-    public $iso = null;
+    public $ISO = null;
     
     /**
      * @var \stdClass
@@ -28,27 +28,60 @@ class Currency extends Getter{
     public $courses = null;
     
     /**
+     * @param string $ISO
      * @param int $id
-     * @param string $iso
      * @throws \Exception
      */
-    public function __construct(int $id, string $iso) {
+    public function __construct(string $ISO, int $id = null) {
         
-        if ($id <= 0) {
-            throw new \Exception(get_called_class(). ": Currency ID must be > 0");
-        }
-        $this->id = $id;
+        $this->setISO($ISO);
         
-        if (preg_match("#[A-Z]{3}#", $iso) !== 1) {
-            throw new \Exception(get_called_class() . ': The ISO code length must be 3 characters and consist of Latin letters in uppercase');
+        if ($id) {
+            $this->setISO($id);
         }
-        $this->iso = $iso;
         
         $this->courses = new \stdClass();
     }
     
-    public function addCourse (string $iso, Course $course) {
-        $this->courses->$iso = $course;
+    /**
+     * Устанавливает id валюты
+     * @param int $id
+     * @throws \Exception
+     */
+    public function setId (int $id) {
+        if ($id <= 0) {
+            throw new \Exception(get_called_class(). ": Currency ID must be > 0");
+        }
+        $this->id = $id;
+    }
+    
+    /**
+     * Устанавливает ISO код валюты
+     * @param string $ISO
+     */
+    public function setISO (string $ISO) {
+        $this->_checkISO($ISO);
+        $this->ISO = $ISO;
+    }
+    
+    /**
+     * Добавляет курс валюты
+     * @param string $ISO
+     * @param \travelsoft\currency\Course $course
+     */
+    public function addCourse (string $ISO, Course $course) {
+        $this->_checkISO($ISO);
+        $this->courses->$ISO = $course;
+    }
+    
+    /**
+     * @param string $ISO
+     * @throws \Exception
+     */
+    protected function _checkISO (string $ISO) {
+        if (preg_match("#[A-Z]{3}#", $ISO) !== 1) {
+            throw new \Exception(get_called_class() . ': The ISO code length must be 3 characters and consist of Latin letters in uppercase');
+        }
     }
     
 }

@@ -35,8 +35,8 @@ class Result {
      * Возвращает отформатированный результат конвертации цены
      * @return string
      */
-    public function format () {
-        return  number_format(
+    public function format () : string {
+        return  (string)number_format(
                     $this->price,
                     Settings::formatDecimal(),
                     Settings::formatDecPoint(), 
@@ -49,7 +49,7 @@ class Result {
      * array("price" => price, "currency" => iso currency)
      * @return array
      */
-    public function getLikeArray () {
+    public function getLikeArray () : array {
         return array("price" => $this->price, "currency" => $this->currency);
     }
     

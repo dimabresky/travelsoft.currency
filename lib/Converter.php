@@ -6,8 +6,6 @@ use travelsoft\currency\Settings;
 use travelsoft\currency\Result;
 use travelsoft\currency\Course;
 use travelsoft\currency\Currency;
-use travelsoft\currency\stores\Courses;
-use travelsoft\currency\stores\Currencies;
 
 
 /**
@@ -26,7 +24,7 @@ class Converter {
     /**
      * @var string
      */
-    protected $currentCurrencyISO = null;
+    protected $DCISO = null;
     
     /**
      * @var array
@@ -34,21 +32,7 @@ class Converter {
     protected $currencies = null;
     
     private function __construct() {
-        
-        # рассчёт курсов валют
-        $this->setCourseById( Settings::baseCourseId() );
-        
-        # установка текущией валюты сайта
-        if ($_REQUEST["currency"]) {
-            
-            $this->setCurrentCurrency($_REQUEST["currency"])->_saveCurrentCurrencyISOinSession();
-        } elseif (($cciso = $this->_getCurrentCurrencyISOFromSession())) {
-            
-            $this->setCurrentCurrency($cciso);
-        } else {
-            
-            $this->setCurrentCurrency(Settings::baseCurrencyId())->_saveCurrentCurrencyISOinSession();
-        }
+        $this->_initDefault();
     }
     
     private function __clone() {}
@@ -65,6 +49,16 @@ class Converter {
     }
     
     /**
+     * Устанавливает валюту и производит рассчёт кросс курсов
+     * в соответствии с установленной валютой
+     * @param Currency $currency
+     */
+    public function setCurrency (Currency $currency) {
+        
+        $this->currencies[$currency->ISO] = $currency;
+    }
+    
+    /**
      * Производит конвертацию цены из одной валюты в другую
      * @param float $price
      * @param string $in
@@ -72,98 +66,55 @@ class Converter {
      * @return \travelsoft\currency\Result
      * @throws \Exception
      */
-    public function convert ( float $price, string $in, string $out = null) : \travelsoft\currency\Result {
+    public function convert (float $price, string $in, string $out = null) : \travelsoft\currency\Result {
         
         if ($price <= 0) {
             
             throw new \Exception(get_called_class() . ": Price must be > 0");
         }
         
-        $currencyIn = $this->_findCurrency((string)$in);
-        if (!$currencyIn->id) {
+        $currencyIn = $this->_findCurrency($in);
+        if (!$currencyIn->ISO) {
             
             throw new \Exception(get_called_class() . ": The currency from which we can not convert is not found");
         }
         
         if ($out === null) {
             
-            $currencyOut = $this->_findByISO($this->currentCurrencyISO);
+            $currencyOut = $this->_findByISO($this->DCISO);
         } else {
             
-            $currencyOut = $this->_findCurrency((string)$out);
-            if (!$currencyOut->id) {
+            $currencyOut = $this->_findCurrency($out);
+            if (!$currencyOut->ISO) {
                 throw new \Exception(get_called_class() . ": The currency in which we convert is not found");
             }
         }
                 
-        return new Result((float)$price/$currencyIn->courses->{$currencyOut->iso}->value, (string)$currencyOut->iso);
-        
+        return new Result((float)$price/$currencyIn->courses->{$currencyOut->ISO}->value, (string)$currencyOut->ISO);        
     }
     
     /**
-     * Устанавливает текущую валюту сайта
-     * @param mixed $val
+     * Устанавливает текущую валюту
+     * для конвертации по-умолчанию
+     * @param string $val
      * @return self
      */
-    public function setCurrentCurrency ( $val ) : self {
+    public function  setDefaultConversionISO (string $val) : self {
         
         if (! ($currency = $this->_findCurrency($val)) ) {
             throw new \Exception(get_called_class() . ': The currency ('.$val.') you want to install is not found');
         }
-        $this->currentCurrencyISO = $currency->iso;
+        $this->DCISO = $currency->ISO;
         return $this;
     }
     
     /**
-     * Устанавливает текущий курс по id
-     * @param int $id
-     * @return self
-     * @throws \Exception
-     */
-    public function setCourseById (int $id) : self {
-        
-        $arCourse = current(Courses::get(array("filter" => array("ID" => $id))));
-        
-        if (!empty($arCourse)) {
-            
-            $arCurrencies = Currencies::get();
-            
-            foreach ($arCurrencies as $arCurrency) {
-                
-                if (!$this->currencies[$arCurrency["UF_ISO"]]) {
-                    $this->currencies[$arCurrency["UF_ISO"]] = new Currency(
-                    $arCurrency["ID"],
-                    $arCurrency["UF_ISO"]
-                    );
-                } 
-                
-                if ($arCurrency["ID"] === $arCourse["UF_BASE_ID"]) {
-                    $this->currencies[$arCurrency["UF_ISO"]]->addCourse(
-                        $arCurrency["UF_ISO"], 
-                        new Course(
-                                (float)$arCourse["UF_" . $arCurrency["UF_ISO"]], 
-                                (string)$arCourse["UF_DATE"]
-                                )
-                        );
-                } else {
-                    $this->_setCrossCourse($arCurrency["UF_ISO"], $arCourse, $arCurrencies);
-                }
-                
-            }
-            
-            return $this;
-        }   
-        
-        throw new \Exception(get_called_class() . ': Course with id "'.$id.'" not found');
-    }
-    
-    /**
      * Возвращает объект валюты по id или ISO коду
-     * @param mixed $val
+     * @param string $val
      * @return \stdClass
      * @throws \Exception
      */
-    public function getCurrency ($val) : \stdClass {
+    public function getCurrency (string $val) : \stdClass {
         
         if ( !($currency = $this->_findCurrency($val)) ) {
             throw new \Exception(get_called_class() . ': The currency "'.$val.'" not found');
@@ -172,49 +123,35 @@ class Converter {
     }
     
     /**
-     * Возвращает объект текущей валюты сайта
-     * @return \stdClass
+     * Инициализация объекта класса из настроек модуля
      */
-    public function getCurrentCurrency() : \stdClass {
+    protected function _initDefault () {
         
-        return $this->getCurrency($this->currentCurrencyISO);
+        $defaultCurrency = Settings::defaultCurrency();
+        $this->currencies[$defaultCurrency->ISO] = $defaultCurrency;
+        $this->_setCrossCourse($defaultCurrency);
+        $this->DCISO = $defaultCurrency->ISO;
     }
-    
-    /**
-     * Сохраняет текущий ISO валюты сайта в сессию
-     */
-    protected function _saveCurrentCurrencyISOinSession () {
-        
-        $_SESSION["__TRAVELSOFT"]["CURRENCY_ISO"] = $this->currentCurrencyISO;
-    }
-    
-    /**
-     * Возвращает iso валюты из сессии
-     * @return string
-     */
-    protected function _getCurrentCurrencyISOFromSession() : string {
-        
-        return (string)$_SESSION["__TRAVELSOFT"]["CURRENCY_ISO"];
-    }
-    
+
     /**
      * Производит расчёт кросс-курсов
-     * @param &$iso
-     * @param &$arCourse
-     * @param &$arCurrencies
+     * @param Currency $currency
      */
-    protected function _setCrossCourse (&$iso, &$arCourse, &$arCurrencies) {
+    protected function _setCrossCourse (Currency $currency) {
         
-        foreach ($arCurrencies as $arCurrency) {
-            $this->currencies[$iso]->addCourse(
-                        $arCurrency["UF_ISO"],
-                        new Course(
-                                (float)($arCourse["UF_" . $iso]/$arCourse["UF_" . $arCurrency["UF_ISO"]]),
-                                (string)$arCourse["UF_DATE"]
-                                )
-                    );
+        $arCourses = (array)$currency->courses;
+        $arrCourses = $arCourses;
+        unset($arCourses[$currency->ISO]);
+        
+        foreach ($arCourses as $ISO => $course) {
+            
+            $this->currencies[$ISO] = new Currency($ISO);
+            
+            foreach ($arrCourses as $IISO => $ccourse) {
+                $this->currencies[$ISO]->addCourse($IISO, new Course($course->value/$ccourse->value)
+                );
+            }
         }
-        
     }
     
     /**
@@ -225,35 +162,35 @@ class Converter {
     protected function _findById (int $id) : \stdClass {
         
         foreach ($this->currencies as $currency) {
-            if ($id === $currency->id) { return $currency; }
+            if ($id === $currency->ISO) { return $currency; }
         }
         return \stdClass;
     }
     
     /**
      * Возвращает объект валюты по iso коду
-     * @param string $iso
-     * @return \stdClass|null
+     * @param string $ISO
+     * @return \stdClass
      */
-    protected function _findByISO (string $iso) : \stdClass {
+    protected function _findByISO (string $ISO) : \stdClass {
         
-        if ($this->currencies[$iso]) {
-            return $this->currencies[$iso];
+        if ($this->currencies[$ISO]) {
+            return $this->currencies[$ISO];
         }
         return \stdClass;
     }
     
     /**
      * Возвращает объект валюты по id или ISO коду
-     * @param string|null $val
+     * @param string $val
      * @return \stdClass
      */
-    protected function _findCurrency ($val) : \stdClass {
+    protected function _findCurrency (string $val) : \stdClass {
         
-        if ( !($currency = $this->_findById((int)$val)) ) {
-            $currency = $this->_findByISO((string)$val);
+        if ( !($currency = $this->_findById(intVal($val))) ) {
+            $currency = $this->_findByISO($val);
         }
-        if ($currency) {
+        if ($currency->ISO) {
             return $currency;
         }
         return \stdClass;
