@@ -81,7 +81,7 @@ class Settings {
     
     /**
      * Возвращает объект валюты по-умолчанию
-     * @return \stdClass
+     * @return Currency
      */
     public static function defaultCurrency () : Currency {
         
@@ -90,7 +90,7 @@ class Settings {
         
         $arCommissions = self::commissions();
         
-        $currency = new Currency((string)$arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"], $arCourse["UF_BASE_ID"]);
+        $currency = new Currency((string)$arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"], intVal($arCourse["UF_BASE_ID"]));
         
         if (!empty($arCommissions)) {
             
@@ -101,10 +101,10 @@ class Settings {
                     # расчёт курса с комиссией
                     $value += $value*($arCurrency["UF_ISO"]/100);
                 }
-                $currency->addCourse($arCurrency["UF_ISO"], new Course($value, $arCourse["UF_DATE"]));
+                $currency->addCourse($arCurrency["UF_ISO"], new Course((float)$value, (string)$arCourse["UF_DATE"]));
             }
         } else {
-            $currency->addCourse($arCurrency["UF_ISO"], new Course($arCourse["UF_" . $arCurrency["UF_ISO"]], $arCourse["UF_DATE"]));
+            $currency->addCourse($arCurrency["UF_ISO"], new Course((float)$arCourse["UF_" . $arCurrency["UF_ISO"]], (string)$arCourse["UF_DATE"]));
         }
         
         return $currency;
