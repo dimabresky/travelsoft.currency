@@ -24,4 +24,16 @@ class Currencies extends Store {
        return  (string)$arCurrency["UF_ISO"];
     }
     
+    /**
+     * Возвращает список доступных ISO кодов в системе
+     * @return array
+     */
+    public static function getAcceptableISO () : array {
+        $arr = parent::get(null, function ($el) {
+            $tmp = $el;
+            $el = $tmp["UF_ISO"];
+        });
+        return (array)array_values($arr);
+    }
+    
 }

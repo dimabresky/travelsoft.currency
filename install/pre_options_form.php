@@ -73,7 +73,7 @@ if (!empty($GLOBALS['ERRORS_FORM'])) {
 	</tr>
         
         <tr>
-            <td><b>Введите ISO код базовой валюты</b></td>
+            <td><b><?= Loc::getMessage("TRAVELSOFT_CURRENCY_NATIONAL_CURRENCY_TITLE")?></b></td>
             <td><input required="" type="text" name="course[iso][]" value="BYN"><input type="hidden" name="course[values][]" value="1"></td>
         </tr>
         

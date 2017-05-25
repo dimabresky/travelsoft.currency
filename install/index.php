@@ -94,10 +94,6 @@ class travelsoft_currency extends CModule
        foreach ($this->currency as $v) {
            $arSave["UF_ISO"] = $v;
            $ID = $dataClass::add($arSave)->getId();
-           if ($first && $ID) {
-               Option::set($this->MODULE_ID, "BASE_CURRENCY_ID", $ID);
-               $first = false;
-           }
        }
     }
     
@@ -270,7 +266,6 @@ class travelsoft_currency extends CModule
             Bitrix\Highloadblock\HighloadBlockTable::delete($CURRENCY_HL_ID);
             Option::delete($this->MODULE_ID, array('name' => 'CURRENCY_HL_ID'));
         }
-        Option::delete($this->MODULE_ID, array('name' => 'BASE_CURRENCY_ID'));
     }
     
     public function unsetCoursesStore () {

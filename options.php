@@ -28,8 +28,7 @@ $dataClass = \Bitrix\Highloadblock\HighloadBlockTable::compileEntity(
  }
  
 $main_options = array(
-   'BASE_CURRENCY_ID' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_BASE_CURRENCY_ID'), 'type' => 'select', 'def' => $arCurrencies),
-   'BASE_COURSE_ID' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_BASE_COURSES_ID'), 'type' => 'select', 'def' => $arCourses),
+   'CURRENT_COURSE_ID' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_BASE_COURSES_ID'), 'type' => 'select', 'def' => $arCourses),
    'FORMAT_DECIMAL' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DECIMAL'), 'type' => 'text'),
    'FORMAT_DEC_POINT' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DEC_POINT'), 'type' => 'text'),
    'FORMAT_THOUSANDS_SEP' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_THOUSANDS_SEP'), 'type' => 'checkbox')
@@ -68,8 +67,6 @@ if( $REQUEST_METHOD == "POST" && strlen( $save . $reset ) > 0 && check_bitrix_se
         }
     }
     
-    
-    
     LocalRedirect($APPLICATION->GetCurPage()."?mid=".urlencode($module_id)."&lang=".urlencode(LANGUAGE_ID)."&".$o_tab->ActiveTabParam());
 }
 $o_tab->Begin();
@@ -88,11 +85,28 @@ foreach( $main_options as $name => $desc ):
         </td>
         <td width="60%">
             <?if($desc['type'] == "select"):?>
-            <select onchange="renderCommissions(this)" id="<?echo $name?>" name="<?echo $name?>">
+            <select id="<?echo $name?>" name="<?echo $name?>">
                     <?foreach ($desc['def'] as $val) :?>
                     <option <?if ($cur_opt_val == $val[0]) :?>selected<?endif?> value="<?= $val[0]?>"><?= $val[1]?></option>
                     <?endforeach?>
                 </select>
+            
+            <?if ($name === "CURRENT_COURSE_ID"):
+                    $commissions = travelsoft\sta((string)Bitrix\Main\Config\Option::get($module_id, "COMMISSIONS"));
+            
+            foreach ($arCurrencies as $val):
+            if ($val[0] == $cur_opt_val) { continue; }?>
+            <tr id="commission-for-<?= $val[1]?>">
+                <td width="40%">
+                    <label for="COMMISSION_FOR[<?= $val[1]?>]"><?= Loc::getMessage("TRAVELSOFT_CURRENCY_COMMISSION", array("#ISO#" => $val[1]))?></label>
+                </td>
+                <td width="60%">
+                    <input name="COMMISSION_FOR[<?= $val[1]?>]" value="<?= $commissions[$val[1]]?>" type="text">
+                </td>
+            </tr>
+            <?endforeach;
+            endif?>
+            
             <?elseif ($desc["type"] == "checkbox"):?>
                 <input type="checkbox" id="<?echo $name?>" value="Y" name="<?echo $name?>">
             <?else:?>
@@ -100,61 +114,6 @@ foreach( $main_options as $name => $desc ):
             <?endif?>
         </td>
     </tr>
-        
-    
-    <?if ($name === "BASE_CURRENCY_ID"):
-            $commissions = travelsoft\sta((string)Bitrix\Main\Config\Option::get($module_id, "COMMISSIONS"));
-        ?>
-    
-    <script>
-    // перерисовка надбавок по валютам
-    function renderCommissions (that) {
-        
-        var currency = JSON.parse('<?= \Bitrix\Main\Web\Json::encode($desc['def'])?>');
-        var title = '<?= Loc::getMessage("TRAVELSOFT_CURRENCY_COMMISSION")?>';
-        var commissions = JSON.parse('<?= \Bitrix\Main\Web\Json::encode($commissions)?>');
-        var html = '';
-        
-        for (var i = 0; i < currency.length; i++) {
-
-            document.getElementById('commission-for-' + currency[i][1]).innerHTML =  getHtml(currency[i], commissions, title, currency[i][0] == that.value);
-        }
-        
-    }
-    // html ввода данных
-    function getHtml (c, com, t, hide) {
-        var html = '';
-        if (hide) {
-            html += '<td width="40%" style="display: none" class="adm-detail-content-cell-l">';
-        } else {
-            html += '<td width="40%" class="adm-detail-content-cell-l">';
-        }
-        html += '<label for="COMMISSION_FOR[' + c[1] + ']">'+t.replace("#ISO#", c[1])+'</label>';
-        html += '</td>';
-        if (hide) {
-            html += '<td width="60%" style="display: none" class="adm-detail-content-cell-r">';
-        } else {
-            html += '<td width="40%" class="adm-detail-content-cell-r">';
-        }
-        html += '<input name="COMMISSION_FOR[' + c[1] + ']" value="'+ ( com[c[1]] || "" ) +'" type="text">';
-        html += '</td>';
-        return html;
-    }
-    </script>    
-    
-    <?foreach ($desc['def'] as $val):?>
-    <?$style = ""; if ($val[0] == $cur_opt_val) {$style = 'style="display:none"';}?>
-    <tr id="commission-for-<?= $val[1]?>">
-        <td width="40%" <?= $style?>>
-            <label for="COMMISSION_FOR[<?= $val[1]?>]"><?= Loc::getMessage("TRAVELSOFT_CURRENCY_COMMISSION", array("#ISO#" => $val[1]))?></label>
-        </td>
-        <td width="60%" <?= $style?>>
-            <input name="COMMISSION_FOR[<?= $val[1]?>]" value="<?= $commissions[$val[1]]?>" type="text">
-        </td>
-    </tr>
-    <?endforeach;
-    endif?>
-        
         
 <?endforeach?>
 <?$o_tab->Buttons();?>

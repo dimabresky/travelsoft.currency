@@ -32,14 +32,6 @@ class Settings {
     }
     
     /**
-     * Возвращает id базовой валюты
-     * @return int
-     */
-    public static function baseCurrencyId () : int {
-        return (int)options::get("travelsoft.currency", "BASE_CURRENCY_ID"); 
-    }
-    
-    /**
      * Возвращает id текущего курса
      * @return int
      */
