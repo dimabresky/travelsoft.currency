@@ -48,10 +48,12 @@ class ConverterTests extends TestCase {
         
         $arResult = $this->converter->convert(1, "BYN", "BYN")->getLikeArray();
         
+        $this->assertArrayHasKey("price", $arResult);
+        $this->assertArrayHasKey("currency", $arResult);
         $this->assertEquals(1, $arResult["price"]);
         
         $arResult = $this->converter->convert(1.8, "BYN", "USD")->getLikeArray();
-        $this->assertEquals(1, $arResult["price"]);
+        $this->assertEquals(1, $arResult["price"]); 
     }
     
 }
