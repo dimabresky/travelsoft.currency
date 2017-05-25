@@ -47,8 +47,7 @@ class Converter {
     }
 
     /**
-     * Устанавливает валюту и производит рассчёт кросс курсов
-     * в соответствии с установленной валютой
+     * Устанавливает валюту
      * @param Currency $currency
      */
     public function setCurrency (Currency $currency) {
@@ -79,16 +78,15 @@ class Converter {
 
         if ($out === null) {
 
-            $currencyOut = $this->_findByISO($this->DCISO);
+            $out = $this->DCISO;
         } else {
-
-            $currencyOut = $this->_findCurrency($out);
-            if (!$currencyOut->ISO) {
+            
+            if ($currencyIn->courses->{$out}->value) {
                 throw new \Exception(get_called_class() . ": The currency in which we convert is not found");
             }
         }
 
-        return new Result((float)$price/$currencyIn->courses->{$currencyOut->ISO}->value, (string)$currencyOut->ISO);
+        return new Result((float)$price/$currencyIn->courses->{$out}->value, (string)$out);
     }
 
     /**
@@ -98,8 +96,9 @@ class Converter {
      * @return self
      */
     public function  setDefaultConversionISO (string $val) : self {
-
-        if (! ($currency = $this->_findCurrency($val)) ) {
+        
+        $currency = $this->_findCurrency($val);
+        if (! $currency->ISO ) {
             throw new \Exception(get_called_class() . ': The currency ('.$val.') you want to install is not found');
         }
         $this->DCISO = $currency->ISO;
@@ -107,14 +106,15 @@ class Converter {
     }
 
     /**
-     * Возвращает объект валюты по id или ISO коду
+     * Возвращает объект валюты ISO коду
      * @param string $val
      * @return Currency
      * @throws \Exception
      */
     public function getCurrency (string $val) : Currency {
-
-        if ( !($currency = $this->_findCurrency($val)) ) {
+        
+        $currency = $this->_findCurrency($val);
+        if ( !$currency->ISO ) {
             throw new \Exception(get_called_class() . ': The currency "'.$val.'" not found');
         }
         return $currency;
@@ -153,45 +153,14 @@ class Converter {
     }
 
     /**
-     * Возвращает объект валюты по id
-     * @param int $id
-     * @return \stdClass|Currency
-     */
-    protected function _findById (int $id) {
-
-        foreach ($this->currencies as $currency) {
-            if ($id === $currency->ISO) { return $currency; }
-        }
-        return new \stdClass();
-    }
-
-    /**
-     * Возвращает объект валюты по iso коду
+     * Возвращает объект валюты ISO коду
      * @param string $ISO
      * @return \stdClass|Currency
      */
-    protected function _findByISO (string $ISO) {
-
+    protected function _findCurrency (string $ISO) {
         if ($this->currencies[$ISO]) {
             return $this->currencies[$ISO];
         }
         return new \stdClass();
     }
-
-    /**
-     * Возвращает объект валюты по id или ISO коду
-     * @param string $val
-     * @return \stdClass|Currency
-     */
-    protected function _findCurrency (string $val) {
-        $currency = $this->_findById(intVal($val));
-        if ( !$currency->ISO ) {
-            $currency = $this->_findByISO($val);
-        }
-        if ($currency->ISO) {
-            return $currency;
-        }
-        return new \stdClass();
-    }
-
 }
