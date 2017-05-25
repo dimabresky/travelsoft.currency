@@ -23,22 +23,24 @@ class CurrencyImporter {
         if (!$arCourse["ID"]) {
             # получение валюты на текущий день из нац.банка
             $arImportCurrencyCourses = Bitrix\Main\Web\Json::decode(file_get_contents($URL));
-            $acceptableISO = stores\Currencies::getAcceptableISO();
+            $arCurrencies = stores\Currencies::get();
+            foreach ($arCurrencies as $arCurrency) {
+                $acceptableISO[$arCurrency["UF_ISO"]] = $arCurrency["ID"];
+            }
             # фильтрация "нужных" курсов валют
             $arCoursesNeeded = array_filter($arImportCurrencyCourses, function ($arItem) use ($acceptableISO) {
-                return in_array($arItem["Cur_Abbreviation"], $acceptableISO);
+                return $acceptableISO[$arItem["Cur_Abbreviation"]] > 0;
             });
             if (!empty($arCoursesNeeded)) {
                 $arSave = array(
-                    "UF_" =>$IBLOCK_ID, 
-                    "NAME" => $CURDATE,
-                    "CODE" => date('d-m-Y'),
-                    "ACTIVE" => "Y",
-                    "PROPERTY_VALUES" => array(
-                        "DATE" => $CURDATE,
-                        $arBase["iso"] => 1
-                    )
+                    "UF_BASE_ID" => $acceptableISO["BYN"],
+                    "UF_DATE" => date("d.m.Y H:i:s", $now),
+                    "UF_UNIX_DATE" => $now
                 );
+                foreach ($arCoursesNeeded as $arrCurrency) {
+                    $arSave["UF_" . $arrCurrency["Cur_Abbreviation"]] = $arrCurrency["Cur_OfficialRate"]/$arrCurrency["Cur_Scale"];
+                }
+                stores\Courses::add($arSave);
             }
         }
     }
