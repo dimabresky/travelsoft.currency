@@ -57,7 +57,7 @@ class CREventsHandlers {
      * @param type $arElement
      */
     public static function saveISOBeforeDelete ($arElement) {
-        file_put_contents($_SERVER["DOCUMENT_ROOT"] . "/dbg.txt", currency\stores\Currencies::getISObyId($arElement["ID"]));
+        
         \Bitrix\Main\Config\Option::set(self::$module_id, "ISO_SAVED", currency\stores\Currencies::getISObyId($arElement["ID"]));
     }
     
