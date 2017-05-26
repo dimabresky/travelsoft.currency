@@ -12,7 +12,7 @@ use travelsoft\currency\interfaces\Store;
  */
 class Currencies extends Store {
     
-    protected $storeName = "currency";
+    protected static $storeName = "currency";
      
     /**
      * Возвращает ISO по id валюты
@@ -20,7 +20,8 @@ class Currencies extends Store {
      * @return string
      */
     public static function getISObyId (int $id) : string {
-       $arCurrency = current(parent::get(array("filter" => array("ID" => $id)))); 
+        
+       $arCurrency = current(parent::get(array("filter" => array("ID" => $id))));
        return  (string)$arCurrency["UF_ISO"];
     }
     
@@ -29,6 +30,7 @@ class Currencies extends Store {
      * @return array
      */
     public static function getAcceptableISO () : array {
+        
         $arr = parent::get(null, function ($el) {
             $tmp = $el;
             $el = $tmp["UF_ISO"];

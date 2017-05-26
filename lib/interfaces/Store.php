@@ -14,7 +14,7 @@ use Bitrix\Highloadblock\HighloadBlockTable as HL;
  */
 abstract class Store {
     
-    protected $storeName = "";
+    protected static $storeName = "";
     
     /**
      * Возвращает полученные данные из таблицы
@@ -22,11 +22,10 @@ abstract class Store {
      * @param callable $callback
      * @return array
      */
-    public static function get (array $query, callable $callback = null) : array {
+    public static function get (array $query = null, callable $callback = null) : array {
         
-        $query["filter"]["UF_ACTIVE"] = 1;
         $table = self::getTable();
-        $dbList = $table::getList($query);
+        $dbList = $table::getList((array)$query);
         $result = array();
         if ($callback) {
             while ($res = $dbList->fetch()) {
@@ -39,7 +38,7 @@ abstract class Store {
             }
         }
         
-        return (array) $table::getList($query)->fetchAll();
+        return (array)$result;
     }
     
     /**

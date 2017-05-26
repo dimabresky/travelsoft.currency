@@ -2,7 +2,7 @@
 
 namespace travelsoft\currency;
 
-use travelsoft\currency\interfaces\Getter;
+use \travelsoft\currency\interfaces\Getter;
 
 /**
  * Класс объектов валюты

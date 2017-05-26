@@ -276,6 +276,18 @@ class travelsoft_currency extends CModule
         }
         Option::delete($this->MODULE_ID, array('name' => 'CURRENT_COURSE_ID'));
     }
+        
+    public function eh ($function) {
+        
+        $ID_CR = Option::get($this->MODULE_ID, "CURRENCY_HL_ID");
+        $ID_CO = Option::get($this->MODULE_ID, "COURSES_HL_ID");
+        $HL_CR = \Bitrix\Highloadblock\HighloadBlockTable ::getById($ID_CR)->fetch();
+        $HL_CO = \Bitrix\Highloadblock\HighloadBlockTable ::getById($ID_CO)->fetch();
+        $function("", $HL_CR["NAME"] . "OnAfterAdd", $this->MODULE_ID, "travelsoft\\CREventsHandlers", "addCourseISOField");
+        $function("", $HL_CR["NAME"] . "OnBeforeDelete", $this->MODULE_ID, "travelsoft\\CREventsHandlers", "saveISOBeforeDelete");
+        $function("", $HL_CR["NAME"] . "OnAfterDelete", $this->MODULE_ID, "travelsoft\\CREventsHandlers", "deleteCourseISOField");
+        $function("", $HL_CO["NAME"] . "OnAfterAdd", $this->MODULE_ID, "travelsoft\\CREventsHandlers", "setCurrenctCourse");
+    }
     
     public function DoInstall()
     {
@@ -299,6 +311,8 @@ class travelsoft_currency extends CModule
                 
                 Option::set($this->MODULE_ID, 'COMMISSIONS', "");
                 
+                $this->eh("RegisterModuleDependences");
+                
                 return true;
             } 
             
@@ -319,6 +333,7 @@ class travelsoft_currency extends CModule
     public function DoUninstall()
     {
         
+        $this->eh("UnRegisterModuleDependences");
         $this->unsetFormatOptions();
         $this->unsetCoursesStore();
         $this->unsetCurrencyStore();
@@ -329,6 +344,5 @@ class travelsoft_currency extends CModule
         ModuleManager::UnRegisterModule($this->MODULE_ID);
         
         return true;
-
     }
 }

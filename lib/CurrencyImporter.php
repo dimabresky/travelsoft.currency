@@ -22,7 +22,7 @@ class CurrencyImporter {
         $arCourse = current(stores\Courses::get(array("order" => array("ID" => "DESC"), "limit" => 1, "filter" => array("><UF_UNIX_DATE" => array($start, $end)))));
         if (!$arCourse["ID"]) {
             # получение валюты на текущий день из нац.банка
-            $arImportCurrencyCourses = Bitrix\Main\Web\Json::decode(file_get_contents($URL));
+            $arImportCurrencyCourses = \Bitrix\Main\Web\Json::decode(file_get_contents($URL));
             $arCurrencies = stores\Currencies::get();
             foreach ($arCurrencies as $arCurrency) {
                 $acceptableISO[$arCurrency["UF_ISO"]] = $arCurrency["ID"];
@@ -33,7 +33,9 @@ class CurrencyImporter {
             });
             if (!empty($arCoursesNeeded)) {
                 $arSave = array(
+                    "UF_BYN" => 1,
                     "UF_BASE_ID" => $acceptableISO["BYN"],
+                    "UF_ACTIVE" => 1,
                     "UF_DATE" => date("d.m.Y H:i:s", $now),
                     "UF_UNIX_DATE" => $now
                 );
