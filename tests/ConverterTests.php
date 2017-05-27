@@ -1,59 +1,39 @@
 <?php
 
-$_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__)."/../../../..");
-$DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
-
-define("NO_KEEP_STATISTIC", true);
-define("NOT_CHECK_PERMISSIONS",true);
-define("NO_AGENT_STATISTIC",true);
-define('NO_AGENT_CHECK', true);
-
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
-Bitrix\Main\Loader::includeModule("travelsoft.currency");
-
-use PHPUnit\Framework\TestCase;
+require "header.php";
 
 /**
  * Тест конвертера валюты
  *
  * @author dimabresky
  */
-class ConverterTests extends TestCase {
+class ConverterTests extends PHPUnit\Framework\TestCase {
     
-    private $converter;
+    private $__converter;
     
     protected function setUp() {
         
-        $this->converter = \travelsoft\currency\Converter::getInstance();
+        $this->__converter = \travelsoft\currency\Converter::getInstance();
     }
     
-    public function testConvert() {
-        $currency = new \travelsoft\currency\Currency();
+    public function testConverter() {
         
-        $currency->setISO("BYN");
+        $currency = new \travelsoft\currency\Currency("BYN");
         
-        $currency->setId(1);
+        $currency->addCourse("USD", new travelsoft\currency\Course(1.8));
+        $currency->addCourse("EUR", new travelsoft\currency\Course(2));
+        $currency->addCourse("RUB", new travelsoft\currency\Course(0.003));
         
-        $arCourse = array(
-            "BYN" => 1,
-            "USD" => 1.8,
-            "EUR" => 2
-        );
+        $this->__converter->setCurrency($currency);
         
-        foreach ($arCourse as $ISO => $value) {
-            $currency->addCourse($ISO, new \travelsoft\currency\Course((float)$value, date("d.m.Y H:i:s")));
-        }
+        $this->assertEquals("1.00 USD", $this->__converter->convert(1.8, "BYN", "USD")->getResult());
+        $this->assertEquals("1.00 EUR", $this->__converter->convert(2, "BYN", "EUR")->getResult());
+        $this->assertEquals("1,000 RUB", $this->__converter->convert(0.003, "BYN", "RUB")->setDecimal(3)->setDecPoint(',')->getResult());
         
-        $this->converter->setCurrency($currency);
-        
-        $arResult = $this->converter->convert(1, "BYN", "BYN")->getLikeArray();
-        
-        $this->assertArrayHasKey("price", $arResult);
-        $this->assertArrayHasKey("currency", $arResult);
-        $this->assertEquals(1, $arResult["price"]);
-        
-        $arResult = $this->converter->convert(1.8, "BYN", "USD")->getLikeArray();
-        $this->assertEquals(1, $arResult["price"]); 
+        $array = $this->__converter->getResultLikeArray();
+        $this->assertArrayHasKey("price", $array);
+        $this->assertArrayHasKey("ISO", $array);
+        $this->assertEquals(1.000, $array["price"]);
+        $this->assertEquals("RUB", $array["ISO"]);   
     }
-    
 }

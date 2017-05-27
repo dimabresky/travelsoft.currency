@@ -86,6 +86,7 @@ class CREventsHandlers {
      * @param type $arFields
      */
     public static function setCurrenctCourse ($elementId, $arFields) {
+        
         if ($arFields["UF_ACTIVE"]) {
             \Bitrix\Main\Config\Option::set(self::$module_id, "CURRENT_COURSE_ID", $elementId);
         }

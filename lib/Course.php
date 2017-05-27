@@ -27,12 +27,10 @@ class Course extends Getter{
      * @param string $date
      * @throws \Exception
      */
-    public function __construct(float $value = null, string $date = null) {
+    public function __construct(float $value , string $date = null) {
         
-        if ($value) {
-            $this->setValue($value);
-        }
-        
+        $this->setValue($value);
+
         if ($date) {
             $this->setDate($date);
         }

@@ -3,7 +3,6 @@
 namespace travelsoft\currency;
 
 use travelsoft\currency\Settings;
-use travelsoft\currency\Result;
 use travelsoft\currency\Course;
 use travelsoft\currency\Currency;
 
@@ -19,17 +18,42 @@ class Converter {
     /**
      * @var self
      */
-    protected static $instance = null;
+    protected static $_instance = null;
 
     /**
      * @var string
      */
-    protected $DCISO = null;
+    protected $_DCISO = null;
 
     /**
      * @var array
      */
-    protected $currencies = null;
+    protected $_currencies = null;
+    
+    /**
+     * @var float
+     */
+    protected $_price = null;
+    
+    /**
+     * @var string
+     */
+    protected $_ISO = null;
+    
+    /**
+     * @var int
+     */
+    protected $_decimal = 2;
+    
+    /**
+     * @var string
+     */
+    protected $_decPoint = '.';
+    
+    /**
+     * @var boolean
+     */
+    protected $_sSep = true;
 
     private function __construct() {}
 
@@ -40,10 +64,11 @@ class Converter {
      * @return self
      */
     public function getInstance () : self {
-        if (!self::$instance) {
-            self::$instance = new self();
+        
+        if (!self::$_instance) {
+            self::$_instance = new self();
         }
-        return self::$instance;
+        return self::$_instance;
     }
 
     /**
@@ -52,7 +77,7 @@ class Converter {
      */
     public function setCurrency (Currency $currency) {
 
-        $this->currencies[$currency->ISO] = $currency;
+        $this->_currencies[$currency->ISO] = $currency;
     }
 
     /**
@@ -60,10 +85,10 @@ class Converter {
      * @param float $price
      * @param string $in
      * @param string $out
-     * @return \travelsoft\currency\Result
+     * @return self
      * @throws \Exception
      */
-    public function convert (float $price, string $in, string $out = null) : \travelsoft\currency\Result {
+    public function convert (float $price, string $in, string $out = null) : self {
 
         if ($price <= 0) {
 
@@ -76,32 +101,93 @@ class Converter {
             throw new \Exception(get_called_class() . ": The currency from which we need convert is not found");
         }
 
-        if ($out === null) {
+        if (is_null($out)) {
 
-            $out = $this->DCISO;
+            $out = $this->_DCISO;
         } else {
             
-            if ($currencyIn->courses->{$out}->value) {
+            if (!$currencyIn->courses->{$out}->value) {
+                
                 throw new \Exception(get_called_class() . ": The currency in which we convert is not found");
             }
         }
-
-        return new Result((float)$price/$currencyIn->courses->{$out}->value, (string)$out);
+        
+        $this->_price = $price/$currencyIn->courses->{$out}->value;
+        $this->_ISO = $out;
+        return $this;
     }
-
+    
+    /**
+     * Возвращает отформатированный результат конвертации цены
+     * @return string
+     */
+    public function getResult () : string {
+        
+        return  (string)number_format(
+                    $this->_price,
+                    $this->_decimal,
+                    $this->_decPoint, 
+                    $this->_sSep ? " " : ""
+                ) . " " .$this->_ISO;
+    }
+    
+    /**
+     * Возвращает массив результат конвертации цены в виде 
+     * array("price" => price, "ISO" => iso currency)
+     * @return array
+     */
+    public function getResultLikeArray () : array {
+        
+        return array("price" => $this->_price, "ISO" => $this->_ISO);
+    }
+    
+    /**
+     * Установка количество знаков после запятой
+     * @param int $dec
+     * @return self
+     */
+    public function setDecimal (int $dec) : self {
+        
+        $this->_decimal = intVal($dec);
+        return $this;
+    }
+    
+    /**
+     * Установка разделителя целой и дробной части
+     * @param string $decPoint
+     * @return self
+     */
+    public function setDecPoint (string $decPoint) : self {
+        
+        $this->_decPoint = $decPoint;
+        return $this;
+    }
+    
+    /**
+     * Установка признака разделения знаков тысячных разрядов пробелом
+     * @param boolean $name
+     * @return self
+     */
+    public function setSSep (bool $sSep) : self {
+        
+        $this->_sSep = $sSep;
+        return $this;
+    }
+    
     /**
      * Устанавливает текущую валюту
      * для конвертации по-умолчанию
      * @param string $val
      * @return self
      */
-    public function  setDefaultConversionISO (string $val) : self {
+    public function setDefaultConversionISO (string $val) : self {
         
         $currency = $this->_findCurrency($val);
         if (! $currency->ISO ) {
+            
             throw new \Exception(get_called_class() . ': The currency ('.$val.') you want to install is not found');
         }
-        $this->DCISO = $currency->ISO;
+        $this->_DCISO = $currency->ISO;
         return $this;
     }
 
@@ -115,20 +201,21 @@ class Converter {
         
         $currency = $this->_findCurrency($val);
         if ( !$currency->ISO ) {
+            
             throw new \Exception(get_called_class() . ': The currency "'.$val.'" not found');
         }
         return $currency;
     }
-
+    
     /**
      * Инициализация объекта класса из настроек модуля
      */
     public function initDefault () {
 
         $defaultCurrency = Settings::defaultCurrency();
-        $this->currencies[$defaultCurrency->ISO] = $defaultCurrency;
+        $this->_currencies[$defaultCurrency->ISO] = $defaultCurrency;
         $this->_setCrossCourse($defaultCurrency);
-        $this->DCISO = $defaultCurrency->ISO;
+        $this->_DCISO = $this->setDefaultConversionISO($defaultCurrency->ISO);
     }
 
     /**
@@ -143,10 +230,11 @@ class Converter {
 
         foreach ($arCourses as $ISO => $course) {
 
-            $this->currencies[$ISO] = new Currency($ISO);
+            $this->_currencies[$ISO] = new Currency($ISO);
 
             foreach ($arrCourses as $IISO => $ccourse) {
-                $this->currencies[$ISO]->addCourse($IISO, new Course($course->value/$ccourse->value)
+                
+                $this->_currencies[$ISO]->addCourse($IISO, new Course($course->value/$ccourse->value)
                 );
             }
         }
@@ -158,8 +246,10 @@ class Converter {
      * @return \stdClass|Currency
      */
     protected function _findCurrency (string $ISO) {
-        if ($this->currencies[$ISO]) {
-            return $this->currencies[$ISO];
+        
+        if ($this->_currencies[$ISO]) {
+            
+            return $this->_currencies[$ISO];
         }
         return new \stdClass();
     }

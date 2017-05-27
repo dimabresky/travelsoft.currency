@@ -32,16 +32,10 @@ class Currency extends Getter{
      * @param int $id
      * @throws \Exception
      */
-    public function __construct(string $ISO = null, int $id = null) {
-        
-        if ($ISO) {
-            $this->setISO($ISO);
-        }
-        
-        if ($id) {
-            $this->setISO($id);
-        }
-        
+    public function __construct(string $ISO) {
+
+        $this->setISO($ISO);
+
         $this->courses = new \stdClass();
     }
     
