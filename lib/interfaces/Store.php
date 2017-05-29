@@ -65,7 +65,6 @@ abstract class Store {
     /**
      * Обновление записи по id
      * @param int $id
-     * @param array $fields
      * @return boolean
      */
     public static function delete (int $id) : bool {
