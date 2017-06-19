@@ -108,7 +108,7 @@ foreach( $main_options as $name => $desc ):
             endif?>
             
             <?elseif ($desc["type"] == "checkbox"):?>
-                <input type="checkbox" id="<?echo $name?>" value="Y" name="<?echo $name?>">
+                <inpu <?if ($cur_opt_val == "Y"):?>checked=""<?endif?> type="checkbox" id="<?echo $name?>" value="Y" name="<?echo $name?>">
             <?else:?>
                 <input type="text" id="<?echo $name?>" value="<?= $cur_opt_val?>" name="<?echo $name?>">
             <?endif?>
