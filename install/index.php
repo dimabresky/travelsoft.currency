@@ -7,9 +7,9 @@ use Bitrix\Main\Localization\Loc,
 
 Loc::loadMessages(__FILE__);
 
-class travelsoft_currency extends CModule
+class new_travelsoft_currency extends CModule
 {
-    public $MODULE_ID = "travelsoft.currency";
+    public $MODULE_ID = "new.travelsoft.currency";
     public $MODULE_VERSION;
     public $MODULE_VERSION_DATE;
     public $MODULE_NAME;
@@ -18,6 +18,7 @@ class travelsoft_currency extends CModule
     protected $namespaceFolder = "travelsoft";
     protected $currency = array();
     protected $courses = array();
+    protected $baseCurrencyId = null;
 
     function __construct()
     {
@@ -30,8 +31,8 @@ class travelsoft_currency extends CModule
             $this->MODULE_VERSION = $arModuleVersion["VERSION"];
             $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
         }
-        $this->MODULE_NAME = Loc::getMessage("TRAVELSOFT_CURRENCY_MODULE_NAME");
-        $this->MODULE_DESCRIPTION = Loc::getMessage("TRAVELSOFT_CURRENCY_MODULE_DESC");
+        $this->MODULE_NAME = Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_MODULE_NAME");
+        $this->MODULE_DESCRIPTION = Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_MODULE_DESC");
         $this->PARTNER_NAME = "dimabresky";
         $this->PARTNER_URI = "https://github.com/dimabresky/";
         
@@ -76,7 +77,7 @@ class travelsoft_currency extends CModule
             }
             
             if (empty($this->courses)) {
-                $GLOBALS['ERRORS_FORM'][] = Loc::getMessage('TRAVELSOFT_CURRENCY_COURSES_NOT_SET');
+                $GLOBALS['ERRORS_FORM'][] = Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_COURSES_NOT_SET');
             }
         }
         
@@ -94,6 +95,11 @@ class travelsoft_currency extends CModule
        foreach ($this->currency as $v) {
            $arSave["UF_ISO"] = $v;
            $ID = $dataClass::add($arSave)->getId();
+           if ($first && $ID) {
+               
+               $first = false;
+               $this->baseCurrencyId = $ID;
+           }
        }
     }
     
@@ -220,9 +226,8 @@ class travelsoft_currency extends CModule
     
     public function addCourses() {
         $dataClass = $this->getHLDataClass(Option::get($this->MODULE_ID, "COURSES_HL_ID"));
-        $baseCurrencyId = Option::get($this->MODULE_ID, "BASE_CURRENCY_ID");
         $now = time();
-        $arSave = array("UF_BASE_ID" => $baseCurrencyId, "UF_ACTIVE" => 1, "UF_DATE" => date('d.m.Y H:i:s', $now), "UF_UNIX_DATE" => $now);
+        $arSave = array("UF_BASE_ID" => $this->baseCurrencyId, "UF_ACTIVE" => 1, "UF_DATE" => date('d.m.Y H:i:s', $now), "UF_UNIX_DATE" => $now);
         foreach ($this->courses as $v) {
             $arSave["UF_" . $v[0]] = $v[1];
         }
@@ -294,7 +299,7 @@ class travelsoft_currency extends CModule
         try {
             
             if ( !ModuleManager::isModuleInstalled("highloadblock") )
-                throw new Exception(Loc::getMessage("TRAVELSOFT_CURRENCY_HIGHLOADBLOCK_MODULE_NOT_INSTALL_ERROR"));
+                throw new Exception(Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_HIGHLOADBLOCK_MODULE_NOT_INSTALL_ERROR"));
             
             $this->prepareRequest();
             
