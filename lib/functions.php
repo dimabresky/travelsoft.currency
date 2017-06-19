@@ -2,7 +2,7 @@
 
 namespace travelsoft;
 
-if (!function_exists("ats")) {
+if (!function_exists("\\travelsoft\\ats")) {
     /**
      * Конвертирует массив в строку
      * @param array $array
@@ -13,7 +13,7 @@ if (!function_exists("ats")) {
     }
 }
 
-if (!function_exists("sta")) {
+if (!function_exists("\\travelsoft\\sta")) {
     /**
      * Коневертирует строку в массив
      * @param string $str
