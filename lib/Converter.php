@@ -115,8 +115,8 @@ class Converter {
             }
         }
 
-        $this->_price = $price / $currencyIn->courses->{$out}->value;
-        $this->_ISO = $out;
+        $this->_price = (float) $price / $currencyIn->courses->{$out}->value;
+        $this->_ISO = (string) $out;
         return $this;
     }
 
@@ -126,9 +126,7 @@ class Converter {
      */
     public function getResult(): string {
 
-        return (string) number_format(
-                        $this->_price, $this->_decimal, $this->_decPoint, $this->_sSep ? " " : ""
-                ) . " " . $this->_ISO;
+        return $this->format($this->_price, $this->_ISO);
     }
 
     /**
@@ -139,6 +137,19 @@ class Converter {
     public function getResultLikeArray(): array {
 
         return array("price" => $this->_price, "ISO" => $this->_ISO);
+    }
+
+    /**
+     * Возвращает отформатированную цену
+     * @param float $price
+     * @param string $iso
+     * @return string
+     */
+    public function format(float $price, string $iso): string {
+
+        return (string) number_format(
+                        $price, $this->_decimal, $this->_decPoint, $this->_sSep ? " " : ""
+                ) . " " . $iso;
     }
 
     /**
