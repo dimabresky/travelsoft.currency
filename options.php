@@ -2,45 +2,41 @@
 
 use Bitrix\Main\Localization\Loc;
 
+use travelsoft\currency\stores\Courses;
+use travelsoft\currency\stores\Currencies;
+
 require_once 'lib/functions.php';
 
-if (!$USER->isAdmin() || !\Bitrix\Main\Loader::includeModule("highloadblock"))
+$module_id = "travelsoft.currency";
+
+if (!$USER->isAdmin() || !\Bitrix\Main\Loader::includeModule("highloadblock") || !\Bitrix\Main\Loader::includeModule($module_id))
     return;
 
 Loc::loadMessages(__FILE__);
 
 global $APPLICATION;
 
-$module_id = "travelsoft.currency";
-
-$dataClass = \Bitrix\Highloadblock\HighloadBlockTable::compileEntity(
-                \Bitrix\Highloadblock\HighloadBlockTable::getById(Bitrix\Main\Config\Option::get($module_id, 'CURRENCY_HL_ID'))->fetch())->getDataClass();
-
-$dbList = $dataClass::getList();
-while ($arCurrency = $dbList->fetch()) {
+foreach (Currencies::get() as $arCurrency) {
     $arCurrencies[] = array($arCurrency['ID'], $arCurrency['UF_ISO']);
 }
 
-$dataClass = \Bitrix\Highloadblock\HighloadBlockTable::compileEntity(
-                \Bitrix\Highloadblock\HighloadBlockTable::getById(Bitrix\Main\Config\Option::get($module_id, 'COURSES_HL_ID'))->fetch())->getDataClass();
-
-$dbList = $dataClass::getList();
-while ($arCourse = $dbList->fetch()) {
+foreach (Courses::get() as $arCourse) {
+    $arSourceCourses[$arCourse['ID']] = $arCourse;
     $arCourses[] = array($arCourse['ID'], $arCourse['UF_DATE']);
 }
 
 $main_options = array(
-    'CURRENT_COURSE_ID' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_BASE_COURSES_ID'), 'type' => 'select', 'def' => $arCourses),
-    'FORMAT_DECIMAL' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DECIMAL'), 'type' => 'text'),
-    'FORMAT_DEC_POINT' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DEC_POINT'), 'type' => 'text'),
-    'FORMAT_THOUSANDS_SEP' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_THOUSANDS_SEP'), 'type' => 'checkbox')
+    'CURRENT_COURSE_ID' => array('desc' => Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_BASE_COURSES_ID'), 'type' => 'select', 'def' => $arCourses),
+    'FORMAT_DECIMAL' => array('desc' => Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DECIMAL'), 'type' => 'text'),
+    'FORMAT_DEC_POINT' => array('desc' => Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DEC_POINT'), 'type' => 'text'),
+    'FORMAT_THOUSANDS_SEP' => array('desc' => Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_THOUSANDS_SEP'), 'type' => 'checkbox')
 );
 $tabs = array(
     array(
         "DIV" => "edit1",
-        "TAB" => Loc::getMessage("TRAVELSOFT_CURRENCY_TAB_NAME"),
+        "TAB" => Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_TAB_NAME"),
         "ICON" => "erip-icon",
-        "TITLE" => Loc::getMessage("TRAVELSOFT_CURRENCY_TAB_DESC")
+        "TITLE" => Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_TAB_DESC")
     ),
 );
 
@@ -96,35 +92,36 @@ $o_tab->Begin();
                         $commissions = travelsoft\sta((string) Bitrix\Main\Config\Option::get($module_id, "COMMISSIONS"));
 
                         foreach ($arCurrencies as $val):
-                            if ($val[0] == $cur_opt_val) {
+
+                            if ($val[0] == $arSourceCourses[$cur_opt_val]['UF_BASE_ID']) {
                                 continue;
                             }
                             ?>
                     <tr id="commission-for-<?= $val[1] ?>">
                         <td width="40%">
-                            <label for="COMMISSION_FOR[<?= $val[1] ?>]"><?= Loc::getMessage("TRAVELSOFT_CURRENCY_COMMISSION", array("#ISO#" => $val[1])) ?></label>
+                            <label for="COMMISSION_FOR[<?= $val[1] ?>]"><?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_COMMISSION", array("#ISO#" => $val[1])) ?></label>
                         </td>
                         <td width="60%">
                             <input name="COMMISSION_FOR[<?= $val[1] ?>]" value="<?= $commissions[$val[1]] ?>" type="text">
                         </td>
                     </tr>
-                <?
+                    <?
                 endforeach;
             endif
             ?>
 
-            <? elseif ($desc["type"] == "checkbox"): ?>
-            <inpu <? if ($cur_opt_val == "Y"): ?>checked=""<? endif ?> type="checkbox" id="<? echo $name ?>" value="Y" name="<? echo $name ?>">
-            <? else: ?>
-                <input type="text" id="<? echo $name ?>" value="<?= $cur_opt_val ?>" name="<? echo $name ?>">
-    <? endif ?>
-            </td>
-            </tr>
+        <? elseif ($desc["type"] == "checkbox"): ?>
+            <input <? if ($cur_opt_val == "Y"): ?>checked=""<? endif ?> type="checkbox" id="<? echo $name ?>" value="Y" name="<? echo $name ?>">
+        <? else: ?>
+            <input type="text" id="<? echo $name ?>" value="<?= $cur_opt_val ?>" name="<? echo $name ?>">
+        <? endif ?>
+        </td>
+        </tr>
 
-        <? endforeach ?>
-<? $o_tab->Buttons(); ?>
-        <input type="submit" name="save" value="<?= Loc::getMessage("TRAVELSOFT_CURRENCY_SAVE_BTN_NAME") ?>" title="<?= Loc::getMessage("TRAVELSOFT_CURRENCY_SAVE_BTN_NAME") ?>" class="adm-btn-save">
-        <input type="submit" name="reset" title="<?= Loc::getMessage("TRAVELSOFT_CURRENCY_RESET_BTN_NAME") ?>" OnClick="return confirm('<? echo AddSlashes(Loc::getMessage("TRAVELSOFT_CURRENCY_RESTORE_WARNING")) ?>')" value="<?= Loc::getMessage("TRAVELSOFT_CURRENCY_RESET_BTN_NAME") ?>">
-        <?= bitrix_sessid_post(); ?>
-<? $o_tab->End(); ?>
-        </form>
+    <? endforeach ?>
+    <? $o_tab->Buttons(); ?>
+    <input type="submit" name="save" value="<?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_SAVE_BTN_NAME") ?>" title="<?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_SAVE_BTN_NAME") ?>" class="adm-btn-save">
+    <input type="submit" name="reset" title="<?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_RESET_BTN_NAME") ?>" OnClick="return confirm('<? echo AddSlashes(Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_RESTORE_WARNING")) ?>')" value="<?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_RESET_BTN_NAME") ?>">
+    <?= bitrix_sessid_post(); ?>
+    <? $o_tab->End(); ?>
+</form>
