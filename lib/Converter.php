@@ -114,8 +114,8 @@ class Converter {
                 throw new \Exception(get_called_class() . ": The currency in which we convert is not found");
             }
         }
-
-        $this->_price = (float) $price / $currencyIn->courses->{$out}->value;
+        
+        $this->_price = (float) $price * $currencyIn->courses->{$out}->value;
         $this->_ISO = (string) $out;
         return $this;
     }
