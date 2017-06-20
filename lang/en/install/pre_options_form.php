@@ -1,4 +1,5 @@
 <?php
+
 $MESS['TRAVELSOFT_CURRENCY_NOTICE'] = "To continue the installation, you need to set the ISO code of the base currency (by default BYN) and the exchange rates.
 When adding a currency, it is MANDATORY! The ISO code must be specified. It should be given in uppercase Latin letters.
 After filling the required amount of currencies and exchange rates, click \"Next\".

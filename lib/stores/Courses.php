@@ -11,7 +11,7 @@ use travelsoft\currency\interfaces\Store;
  * @copyright (c) 2017, travelsoft
  */
 class Courses extends Store {
-    
+
     protected static $storeName = "courses";
-    
+
 }

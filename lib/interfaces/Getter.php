@@ -9,7 +9,7 @@ namespace travelsoft\currency\interfaces;
  * @copyright (c) 2017, travelsoft
  */
 abstract class Getter {
-    
+
     public function __get($name) {
         $class = get_called_class();
         if (!property_exists($class, $name)) {
@@ -17,8 +17,9 @@ abstract class Getter {
         }
         return $this->$name;
     }
-    
+
     protected function __set($name, $value) {
         $this->$name = $value;
     }
+
 }

@@ -1,14 +1,14 @@
 <?php
+
 use Bitrix\Main\Localization\Loc,
-        Bitrix\Main\ModuleManager,
-                Bitrix\Main\Loader,
-                    Bitrix\Main\Config\Option;
-                    
+    Bitrix\Main\ModuleManager,
+    Bitrix\Main\Loader,
+    Bitrix\Main\Config\Option;
 
 Loc::loadMessages(__FILE__);
 
-class new_travelsoft_currency extends CModule
-{
+class new_travelsoft_currency extends CModule {
+
     public $MODULE_ID = "new.travelsoft.currency";
     public $MODULE_VERSION;
     public $MODULE_VERSION_DATE;
@@ -20,14 +20,12 @@ class new_travelsoft_currency extends CModule
     protected $courses = array();
     protected $baseCurrencyId = null;
 
-    function __construct()
-    {
+    function __construct() {
         $arModuleVersion = array();
         $path = str_replace("\\", "/", __FILE__);
         $path = substr($path, 0, strlen($path) - strlen("/index.php"));
-        include($path."/version.php");
-        if (is_array($arModuleVersion) && array_key_exists("VERSION", $arModuleVersion))
-        {
+        include($path . "/version.php");
+        if (is_array($arModuleVersion) && array_key_exists("VERSION", $arModuleVersion)) {
             $this->MODULE_VERSION = $arModuleVersion["VERSION"];
             $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
         }
@@ -35,76 +33,72 @@ class new_travelsoft_currency extends CModule
         $this->MODULE_DESCRIPTION = Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_MODULE_DESC");
         $this->PARTNER_NAME = "dimabresky";
         $this->PARTNER_URI = "https://github.com/dimabresky/";
-        
+
         Loader::includeModule('highloadblock');
-        
     }
-    
+
     public function createHighload($HLNAME) {
         $result = Bitrix\Highloadblock\HighloadBlockTable::add(array(
-            'NAME' => $HLNAME,
-            'TABLE_NAME' => strtolower($HLNAME),
+                    'NAME' => $HLNAME,
+                    'TABLE_NAME' => strtolower($HLNAME),
         ));
         if (!$result->isSuccess()) {
-            throw new Exception (implode("<br>", $result->getErrorMessages()));
+            throw new Exception(implode("<br>", $result->getErrorMessages()));
         }
         return $result->getId();
     }
-    
+
     public function addHLFields($HL_FIELDS) {
-        
+
         $oUserTypeEntity = new CUserTypeEntity();
-                
+
         foreach ($HL_FIELDS as $aUserFields) {
 
-            if (!$oUserTypeEntity->Add( $aUserFields )) {
-                throw new Exception("Возникла ошибка при добавлении свойства " .$aUserFields["ENTITY_ID"] . "[".$aUserFields["FIELD_NAME"]."]" . $oUserTypeEntity->LAST_ERROR);
+            if (!$oUserTypeEntity->Add($aUserFields)) {
+                throw new Exception("Возникла ошибка при добавлении свойства " . $aUserFields["ENTITY_ID"] . "[" . $aUserFields["FIELD_NAME"] . "]" . $oUserTypeEntity->LAST_ERROR);
             }
-
         }
-        
     }
-    
+
     public function prepareRequest() {
-   
+
         if (isset($_REQUEST['course'])) {
             $c = $_REQUEST['course'];
             foreach ($c['iso'] as $k => $v) {
                 if ($v !== "" && $c['values'][$k] !== "") {
-                   $this->courses[] = array(strtoupper($v), (float)str_replace(',', '.', $c['values'][$k]));
-                   $this->currency[] = strtoupper($v);
+                    $this->courses[] = array(strtoupper($v), (float) str_replace(',', '.', $c['values'][$k]));
+                    $this->currency[] = strtoupper($v);
                 }
             }
-            
+
             if (empty($this->courses)) {
                 $GLOBALS['ERRORS_FORM'][] = Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_COURSES_NOT_SET');
             }
         }
-        
     }
-    
-    public function getHLDataClass ($id) {
+
+    public function getHLDataClass($id) {
         return \Bitrix\Highloadblock\HighloadBlockTable::compileEntity(
-               \Bitrix\Highloadblock\HighloadBlockTable::getById($id)->fetch())->getDataClass();
+                        \Bitrix\Highloadblock\HighloadBlockTable::getById($id)->fetch())->getDataClass();
     }
-    
+
     public function addCurrency() {
-       $dataClass = $this->getHLDataClass(Option::get($this->MODULE_ID, 'CURRENCY_HL_ID'));
-       $arSave = array("UF_ACTIVE" => 1);
-       $first = true;
-       foreach ($this->currency as $v) {
-           $arSave["UF_ISO"] = $v;
-           $ID = $dataClass::add($arSave)->getId();
-           if ($first && $ID) {
-               
-               $first = false;
-               $this->baseCurrencyId = $ID;
-           }
-       }
+        $dataClass = $this->getHLDataClass(Option::get($this->MODULE_ID, 'CURRENCY_HL_ID'));
+        $arSave = array("UF_ACTIVE" => 1);
+        $first = true;
+        foreach ($this->currency as $v) {
+            $arSave["UF_ISO"] = $v;
+            $ID = $dataClass::add($arSave)->getId();
+            if ($first && $ID) {
+
+                $first = false;
+                $this->baseCurrencyId = $ID;
+            }
+        }
     }
-    
-    public function getCoursesFields () {
-        
+
+    public function getCoursesFields() {
+
         $HL_ID = Option::get($this->MODULE_ID, 'COURSES_HL_ID');
         $arFields = array(
             array(
@@ -126,12 +120,12 @@ class new_travelsoft_currency extends CModule
                     'MAX_LENGTH' => 0,
                     'REGEXP' => ''
                 ),
-                'EDIT_FORM_LABEL'   => array(
-                    'ru'    => 'ID базового курса'
+                'EDIT_FORM_LABEL' => array(
+                    'ru' => 'ID базового курса'
                 )
             ),
             array(
-                "ENTITY_ID" =>  'HLBLOCK_' . $HL_ID,
+                "ENTITY_ID" => 'HLBLOCK_' . $HL_ID,
                 "FIELD_NAME" => "UF_ACTIVE",
                 "USER_TYPE_ID" => 'boolean',
                 "XML_ID" => "",
@@ -142,15 +136,15 @@ class new_travelsoft_currency extends CModule
                 'SHOW_IN_LIST' => 'N',
                 'IS_SEARCHABLE' => 'N',
                 'SETTINGS' => array(
-                        'DEFAULT_VALUE' => "0",
-                        'DISPLAY' => 'CHECKBOX',
-                    ),
-                'EDIT_FORM_LABEL'   => array(
-                    'ru'    => 'Активность',
+                    'DEFAULT_VALUE' => "0",
+                    'DISPLAY' => 'CHECKBOX',
+                ),
+                'EDIT_FORM_LABEL' => array(
+                    'ru' => 'Активность',
                 )
             ),
             array(
-                "ENTITY_ID" =>  'HLBLOCK_' . $HL_ID,
+                "ENTITY_ID" => 'HLBLOCK_' . $HL_ID,
                 "FIELD_NAME" => "UF_DATE",
                 "USER_TYPE_ID" => 'string',
                 "XML_ID" => "",
@@ -168,12 +162,12 @@ class new_travelsoft_currency extends CModule
                     'MAX_LENGTH' => 0,
                     'REGEXP' => ''
                 ),
-                'EDIT_FORM_LABEL'   => array(
-                    'ru'    => "Дата"
+                'EDIT_FORM_LABEL' => array(
+                    'ru' => "Дата"
                 )
             ),
             array(
-                "ENTITY_ID" =>  'HLBLOCK_' . $HL_ID,
+                "ENTITY_ID" => 'HLBLOCK_' . $HL_ID,
                 "FIELD_NAME" => "UF_UNIX_DATE",
                 "USER_TYPE_ID" => 'string',
                 "XML_ID" => "",
@@ -191,14 +185,14 @@ class new_travelsoft_currency extends CModule
                     'MAX_LENGTH' => 0,
                     'REGEXP' => ''
                 ),
-                'EDIT_FORM_LABEL'   => array(
-                    'ru'    => "Unix дата"
+                'EDIT_FORM_LABEL' => array(
+                    'ru' => "Unix дата"
                 )
             )
         );
         foreach ($this->courses as $v) {
             $arFields[] = array(
-                "ENTITY_ID" =>  'HLBLOCK_' . $HL_ID,
+                "ENTITY_ID" => 'HLBLOCK_' . $HL_ID,
                 "FIELD_NAME" => "UF_" . $v[0],
                 "USER_TYPE_ID" => 'string',
                 "XML_ID" => "",
@@ -216,14 +210,14 @@ class new_travelsoft_currency extends CModule
                     'MAX_LENGTH' => 0,
                     'REGEXP' => ''
                 ),
-                'EDIT_FORM_LABEL'   => array(
-                    'ru'    => $v[0]
+                'EDIT_FORM_LABEL' => array(
+                    'ru' => $v[0]
                 )
             );
         }
         return $arFields;
     }
-    
+
     public function addCourses() {
         $dataClass = $this->getHLDataClass(Option::get($this->MODULE_ID, "COURSES_HL_ID"));
         $now = time();
@@ -234,8 +228,8 @@ class new_travelsoft_currency extends CModule
         $ID = $dataClass::add($arSave)->getId();
         Option::set($this->MODULE_ID, "CURRENT_COURSE_ID", $ID);
     }
-    
-    public function makeCurrencyStore () {
+
+    public function makeCurrencyStore() {
         // create HL currency
         $CURRENCY_HL_ID = $this->createHighload('TSCURRENCY');
         Option::set($this->MODULE_ID, 'CURRENCY_HL_ID', $CURRENCY_HL_ID);
@@ -243,8 +237,8 @@ class new_travelsoft_currency extends CModule
         // add currency
         $this->addCurrency();
     }
-    
-    public function makeCoursesStore () {
+
+    public function makeCoursesStore() {
         // create HL courses currency
         $COURSES_HL_ID = $this->createHighload('TSCOURSES');
         Option::set($this->MODULE_ID, 'COURSES_HL_ID', $COURSES_HL_ID);
@@ -252,28 +246,28 @@ class new_travelsoft_currency extends CModule
         // add courses
         $this->addCourses();
     }
-    
-    public function setFormatOptions () {
+
+    public function setFormatOptions() {
         Option::set($this->MODULE_ID, 'FORMAT_DECIMAL', 2);
         Option::set($this->MODULE_ID, 'FORMAT_DEC_POINT', '.');
         Option::set($this->MODULE_ID, 'FORMAT_THOUSANDS_SEP', '');
     }
-    
-    public function unsetFormatOptions () {
+
+    public function unsetFormatOptions() {
         Option::delete($this->MODULE_ID, array('name' => 'FORMAT_DECIMAL'));
         Option::delete($this->MODULE_ID, array('name' => 'FORMAT_DEC_POINT'));
         Option::delete($this->MODULE_ID, array('name' => 'FORMAT_THOUSANDS_SEP'));
     }
-    
-    public function unsetCurrencyStore () {
+
+    public function unsetCurrencyStore() {
         $CURRENCY_HL_ID = Option::get($this->MODULE_ID, "CURRENCY_HL_ID");
         if ($CURRENCY_HL_ID) {
             Bitrix\Highloadblock\HighloadBlockTable::delete($CURRENCY_HL_ID);
             Option::delete($this->MODULE_ID, array('name' => 'CURRENCY_HL_ID'));
         }
     }
-    
-    public function unsetCoursesStore () {
+
+    public function unsetCoursesStore() {
         $COURSES_HL_ID = Option::get($this->MODULE_ID, "COURSES_HL_ID");
         if ($COURSES_HL_ID) {
             Bitrix\Highloadblock\HighloadBlockTable::delete($COURSES_HL_ID);
@@ -281,9 +275,9 @@ class new_travelsoft_currency extends CModule
         }
         Option::delete($this->MODULE_ID, array('name' => 'CURRENT_COURSE_ID'));
     }
-        
-    public function eh ($function) {
-        
+
+    public function eh($function) {
+
         $ID_CR = Option::get($this->MODULE_ID, "CURRENCY_HL_ID");
         $ID_CO = Option::get($this->MODULE_ID, "COURSES_HL_ID");
         $HL_CR = \Bitrix\Highloadblock\HighloadBlockTable ::getById($ID_CR)->fetch();
@@ -293,61 +287,58 @@ class new_travelsoft_currency extends CModule
         $function("", $HL_CR["NAME"] . "OnAfterDelete", $this->MODULE_ID, "travelsoft\\CREventsHandlers", "deleteCourseISOField");
         $function("", $HL_CO["NAME"] . "OnAfterAdd", $this->MODULE_ID, "travelsoft\\CREventsHandlers", "setCurrenctCourse");
     }
-    
-    public function DoInstall()
-    {
+
+    public function DoInstall() {
         try {
-            
-            if ( !ModuleManager::isModuleInstalled("highloadblock") )
+
+            if (!ModuleManager::isModuleInstalled("highloadblock"))
                 throw new Exception(Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_HIGHLOADBLOCK_MODULE_NOT_INSTALL_ERROR"));
-            
+
             $this->prepareRequest();
-            
-            if ($_REQUEST['step'] == "next" && !empty($this->currency) && !empty($this->courses)) {     
-                
+
+            if ($_REQUEST['step'] == "next" && !empty($this->currency) && !empty($this->courses)) {
+
                 // register module
                 ModuleManager::registerModule($this->MODULE_ID);
-                
+
                 $this->makeCurrencyStore();
-                
+
                 $this->makeCoursesStore();
-                
+
                 $this->setFormatOptions();
-                
+
                 Option::set($this->MODULE_ID, 'COMMISSIONS', "");
-                
+
                 $this->eh("RegisterModuleDependences");
-                
+
                 return true;
-            } 
-            
+            }
+
             $GLOBALS['MODULE_ID'] = $this->MODULE_ID;
             // form add currency and currency courses
-            $GLOBALS['APPLICATION']->IncludeAdminFile('Pre-options', $_SERVER["DOCUMENT_ROOT"]."/local/modules/".$this->MODULE_ID."/install/pre_options_form.php");
-            
-            
+            $GLOBALS['APPLICATION']->IncludeAdminFile('Pre-options', $_SERVER["DOCUMENT_ROOT"] . "/local/modules/" . $this->MODULE_ID . "/install/pre_options_form.php");
         } catch (Exception $ex) {
             $GLOBALS["APPLICATION"]->ThrowException($ex->getMessage());
             $this->DoUninstall();
             return false;
         }
-        
+
         return true;
     }
-    
-    public function DoUninstall()
-    {
-        
+
+    public function DoUninstall() {
+
         $this->eh("UnRegisterModuleDependences");
         $this->unsetFormatOptions();
         $this->unsetCoursesStore();
         $this->unsetCurrencyStore();
-        
+
         Option::delete($this->MODULE_ID, array('name' => 'COMMISSIONS'));
-        
+
         // unregister module
         ModuleManager::UnRegisterModule($this->MODULE_ID);
-        
+
         return true;
     }
+
 }

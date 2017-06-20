@@ -1,4 +1,5 @@
 <?php
+
 $MESS['TRAVELSOFT_CURRENCY_MODULE_NAME'] = "Currency module";
 $MESS['TRAVELSOFT_CURRENCY_MODULE_DESC'] = "Currency module for editors below a small business";
 $MESS['TRAVELSOFT_CURRENCY_HIGHLOADBLOCK_MODULE_NOT_INSTALL_ERROR'] = "Iblock module already installed";

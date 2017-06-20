@@ -1,4 +1,5 @@
 <?php
+
 $MESS['TRAVELSOFT_CURRENCY_BASE_CURRENCY_ID'] = 'Базовая валюта';
 $MESS['TRAVELSOFT_CURRENCY_BASE_COURSES_ID'] = 'Текущий курс валюты';
 $MESS['TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DECIMAL'] = 'Количество десячичных знаков';
