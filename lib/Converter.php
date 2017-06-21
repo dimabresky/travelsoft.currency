@@ -115,7 +115,7 @@ class Converter {
             }
         }
         
-        $this->_price = (float) $price * $currencyIn->courses->{$out}->value;
+        $this->_price = (float) $price / $currencyIn->courses->{$out}->value;
         $this->_ISO = (string) $out;
         return $this;
     }
@@ -260,7 +260,7 @@ class Converter {
 
             foreach ($arrCourses as $IISO => $ccourse) {
 
-                $this->_currencies[$ISO]->addCourse($IISO, new Course($course->value / $ccourse->value)
+                $this->_currencies[$ISO]->addCourse($IISO, new Course($ccourse->value / $course->value)
                 );
             }
         }
