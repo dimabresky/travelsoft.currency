@@ -13,4 +13,4 @@ $classes = array(
     "travelsoft\\CREventsHandlers" => "lib/CREventsHandlers.php"
 );
 CModule::AddAutoloadClasses("travelsoft.currency", $classes);
-require_once 'lib/functions.php'
+require_once 'lib/functions.php';
