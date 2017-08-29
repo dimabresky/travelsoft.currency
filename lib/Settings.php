@@ -92,7 +92,7 @@ class Settings {
                 $value = $arCourse["UF_" . $arCurrency["UF_ISO"]];
                 if (!$arCourse["UF_BASE_ID"] !== $arCurrency["ID"] && $arCommissions[$arCurrency["UF_ISO"]] > 0) {
                     # расчёт курса с комиссией
-                    $value += $value * ($arCurrency["UF_ISO"] / 100);
+                    $value = $value + $value * ($arCommissions[$arCurrency["UF_ISO"]] / 100);
                 }
                 $currency->addCourse($arCurrency["UF_ISO"], new Course((float) $value, (string) $arCourse["UF_DATE"]));
             }
