@@ -97,7 +97,11 @@ class Settings {
                 $currency->addCourse($arCurrency["UF_ISO"], new Course((float) $value, (string) $arCourse["UF_DATE"]));
             }
         } else {
-            $currency->addCourse($arCurrency["UF_ISO"], new Course((float) $arCourse["UF_" . $arCurrency["UF_ISO"]], (string) $arCourse["UF_DATE"]));
+        
+            foreach ($arCurrencies as $arCurrency) {
+                
+                $currency->addCourse($arCurrency["UF_ISO"], new Course((float) $arCourse["UF_" . $arCurrency["UF_ISO"]], (string) $arCourse["UF_DATE"]));
+            }
         }
 
         return $currency;
