@@ -236,7 +236,7 @@ class Converter {
 
         $defaultCurrency = Settings::defaultCurrency();
         $this->_currencies[$defaultCurrency->ISO] = $defaultCurrency;
-        $this->_setCrossCourse($defaultCurrency);
+        $this->setCrossCourse($defaultCurrency);
         $this->setDefaultConversionISO($defaultCurrency->ISO);
         $this->_decimal = Settings::formatDecimal();
         $this->_decPoint = Settings::formatDecPoint();
@@ -248,7 +248,7 @@ class Converter {
      * Производит расчёт кросс-курсов
      * @param Currency $currency
      */
-    protected function _setCrossCourse(Currency $currency) {
+    public function setCrossCourse(Currency $currency) {
 
         $arCourses = (array) $currency->courses;
         $arrCourses = $arCourses;
