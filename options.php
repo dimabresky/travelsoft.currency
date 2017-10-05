@@ -5,8 +5,6 @@ use Bitrix\Main\Localization\Loc;
 use travelsoft\currency\stores\Courses;
 use travelsoft\currency\stores\Currencies;
 
-require_once 'lib/functions.php';
-
 $module_id = "travelsoft.currency";
 
 if (!$USER->isAdmin() || !\Bitrix\Main\Loader::includeModule("highloadblock") || !\Bitrix\Main\Loader::includeModule($module_id))
@@ -26,17 +24,17 @@ foreach (Courses::get() as $arCourse) {
 }
 
 $main_options = array(
-    'CURRENT_COURSE_ID' => array('desc' => Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_BASE_COURSES_ID'), 'type' => 'select', 'def' => $arCourses),
-    'FORMAT_DECIMAL' => array('desc' => Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DECIMAL'), 'type' => 'text'),
-    'FORMAT_DEC_POINT' => array('desc' => Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DEC_POINT'), 'type' => 'text'),
-    'FORMAT_THOUSANDS_SEP' => array('desc' => Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_THOUSANDS_SEP'), 'type' => 'checkbox')
+    'CURRENT_COURSE_ID' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_BASE_COURSES_ID'), 'type' => 'select', 'def' => $arCourses),
+    'FORMAT_DECIMAL' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DECIMAL'), 'type' => 'text'),
+    'FORMAT_DEC_POINT' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_DEC_POINT'), 'type' => 'text'),
+    'FORMAT_THOUSANDS_SEP' => array('desc' => Loc::getMessage('TRAVELSOFT_CURRENCY_CURRENCY_FORMAT_THOUSANDS_SEP'), 'type' => 'checkbox')
 );
 $tabs = array(
     array(
         "DIV" => "edit1",
-        "TAB" => Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_TAB_NAME"),
+        "TAB" => Loc::getMessage("TRAVELSOFT_CURRENCY_TAB_NAME"),
         "ICON" => "erip-icon",
-        "TITLE" => Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_TAB_DESC")
+        "TITLE" => Loc::getMessage("TRAVELSOFT_CURRENCY_TAB_DESC")
     ),
 );
 
@@ -99,7 +97,7 @@ $o_tab->Begin();
                             ?>
                     <tr id="commission-for-<?= $val[1] ?>">
                         <td width="40%">
-                            <label for="COMMISSION_FOR[<?= $val[1] ?>]"><?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_COMMISSION", array("#ISO#" => $val[1])) ?></label>
+                            <label for="COMMISSION_FOR[<?= $val[1] ?>]"><?= Loc::getMessage("TRAVELSOFT_CURRENCY_COMMISSION", array("#ISO#" => $val[1])) ?></label>
                         </td>
                         <td width="60%">
                             <input name="COMMISSION_FOR[<?= $val[1] ?>]" value="<?= $commissions[$val[1]] ?>" type="text">
@@ -120,8 +118,8 @@ $o_tab->Begin();
 
     <? endforeach ?>
     <? $o_tab->Buttons(); ?>
-    <input type="submit" name="save" value="<?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_SAVE_BTN_NAME") ?>" title="<?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_SAVE_BTN_NAME") ?>" class="adm-btn-save">
-    <input type="submit" name="reset" title="<?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_RESET_BTN_NAME") ?>" OnClick="return confirm('<? echo AddSlashes(Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_RESTORE_WARNING")) ?>')" value="<?= Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_RESET_BTN_NAME") ?>">
+    <input type="submit" name="save" value="<?= Loc::getMessage("TRAVELSOFT_CURRENCY_SAVE_BTN_NAME") ?>" title="<?= Loc::getMessage("TRAVELSOFT_CURRENCY_SAVE_BTN_NAME") ?>" class="adm-btn-save">
+    <input type="submit" name="reset" title="<?= Loc::getMessage("TRAVELSOFT_CURRENCY_RESET_BTN_NAME") ?>" OnClick="return confirm('<? echo AddSlashes(Loc::getMessage("TRAVELSOFT_CURRENCY_RESTORE_WARNING")) ?>')" value="<?= Loc::getMessage("TRAVELSOFT_CURRENCY_RESET_BTN_NAME") ?>">
     <?= bitrix_sessid_post(); ?>
     <? $o_tab->End(); ?>
 </form>

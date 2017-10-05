@@ -7,9 +7,9 @@ use Bitrix\Main\Localization\Loc,
 
 Loc::loadMessages(__FILE__);
 
-class new_travelsoft_currency extends CModule {
+class travelsoft_currency extends CModule {
 
-    public $MODULE_ID = "new.travelsoft.currency";
+    public $MODULE_ID = "travelsoft.currency";
     public $MODULE_VERSION;
     public $MODULE_VERSION_DATE;
     public $MODULE_NAME;
@@ -29,8 +29,8 @@ class new_travelsoft_currency extends CModule {
             $this->MODULE_VERSION = $arModuleVersion["VERSION"];
             $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
         }
-        $this->MODULE_NAME = Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_MODULE_NAME");
-        $this->MODULE_DESCRIPTION = Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_MODULE_DESC");
+        $this->MODULE_NAME = Loc::getMessage("TRAVELSOFT_CURRENCY_MODULE_NAME");
+        $this->MODULE_DESCRIPTION = Loc::getMessage("TRAVELSOFT_CURRENCY_MODULE_DESC");
         $this->PARTNER_NAME = "dimabresky";
         $this->PARTNER_URI = "https://github.com/dimabresky/";
 
@@ -72,7 +72,7 @@ class new_travelsoft_currency extends CModule {
             }
 
             if (empty($this->courses)) {
-                $GLOBALS['ERRORS_FORM'][] = Loc::getMessage('NEW_TRAVELSOFT_CURRENCY_COURSES_NOT_SET');
+                $GLOBALS['ERRORS_FORM'][] = Loc::getMessage('TRAVELSOFT_CURRENCY_COURSES_NOT_SET');
             }
         }
     }
@@ -292,7 +292,7 @@ class new_travelsoft_currency extends CModule {
         try {
 
             if (!ModuleManager::isModuleInstalled("highloadblock"))
-                throw new Exception(Loc::getMessage("NEW_TRAVELSOFT_CURRENCY_HIGHLOADBLOCK_MODULE_NOT_INSTALL_ERROR"));
+                throw new Exception(Loc::getMessage("TRAVELSOFT_CURRENCY_HIGHLOADBLOCK_MODULE_NOT_INSTALL_ERROR"));
 
             $this->prepareRequest();
 
