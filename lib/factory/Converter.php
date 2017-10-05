@@ -7,14 +7,14 @@ namespace travelsoft\currency\factory;
  * @author dimabresky
  * @copyright (c) 2017, travelsoft
  */
-class Converter {
+class Converter extends AbstractFactory{
 
-    public static function getInstance (\travelsoft\currency\Currency $currency = null, int $decimal = null, string $decPoint = null, string $ssep = null) {
+    public static function getInstance (travelsoft\currency\CuContainer $cuContainer = null, int $decimal = null, string $decPoint = null, string $ssep = null) {
         
-        static $instances;
+        static $instances = array();
         
-        if (!$currency) {
-            // генерируем объект Currency по-умолчанию
+        if (!$cuContainer) {
+            // генерируем объект $cuContainer по-умолчанию
         }
         
         if (!$decimal) {
@@ -29,7 +29,7 @@ class Converter {
             $ssep = \travelsoft\currency\Settings::formatSSep();
         }
         
-        $hash = md5(serialize($currency) . serialize($ssep) . serialize($decPoint) . serialize($decimal));
+        $hash = self::hashGeneration(array($cuContainer, $decimal, $decPoint, $ssep));
         
         if (!$instances[$hash]) {
             // генерируем класс конвертера
