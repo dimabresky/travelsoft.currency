@@ -2,30 +2,28 @@
 
 namespace travelsoft\currency;
 
-use \travelsoft\currency\interfaces\Getter;
-
 /**
  * Класс объектов валюты
  *
  * @author dimabresky
  * @copyright (c) 2017, travelsoft
  */
-class Currency extends Getter {
+class Currency {
 
     /**
      * @var int
      */
-    public $id = null;
+    protected $_id = null;
 
     /**
      * @var string
      */
-    public $ISO = null;
+    protected $_ISO = null;
 
     /**
      * @var \stdClass
      */
-    public $courses = null;
+    protected $_courses = null;
 
     /**
      * @param string $ISO
@@ -36,9 +34,27 @@ class Currency extends Getter {
 
         $this->setISO($ISO);
 
-        $this->courses = new \stdClass();
+        $this->_courses = new \stdClass();
     }
-
+    
+    /**
+     * @param string $name
+     * @return float|string|\stdClass
+     * @throws \Exception
+     */
+    public function __get($name) {
+        switch ($name) {
+            case "ISO":
+                return $this->_ISO;
+            case "id":
+                return $this->_id;
+            case "courses":
+                return $this->_courses;
+            default:
+                throw new \Exception("Unknown parameter \"".$name."\"");
+        }
+    }
+    
     /**
      * Устанавливает id валюты
      * @param int $id
@@ -48,7 +64,7 @@ class Currency extends Getter {
         if ($id <= 0) {
             throw new \Exception(get_called_class() . ": Currency ID must be > 0");
         }
-        $this->id = $id;
+        $this->_id = $id;
     }
 
     /**
@@ -57,7 +73,7 @@ class Currency extends Getter {
      */
     public function setISO(string $ISO) {
         $this->_checkISO($ISO);
-        $this->ISO = $ISO;
+        $this->_ISO = $ISO;
     }
 
     /**
@@ -67,7 +83,7 @@ class Currency extends Getter {
      */
     public function addCourse(string $ISO, Course $course) {
         $this->_checkISO($ISO);
-        $this->courses->$ISO = $course;
+        $this->_courses->$ISO = $course;
     }
 
     /**

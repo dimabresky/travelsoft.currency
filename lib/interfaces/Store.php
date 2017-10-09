@@ -72,6 +72,15 @@ abstract class Store {
         $table = self::getTable();
         return boolval($table::delete($id));
     }
+    
+    /**
+     * Возвращает запись по id
+     * @param int $id
+     * @return array
+     */
+    public static function getById(int $id) : array {
+        return (array) current( self::get(array('filter' => array('ID' => $id))) );
+    }
 
     /**
      * @return string

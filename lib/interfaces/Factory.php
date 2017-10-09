@@ -1,6 +1,6 @@
 <?php
 
-namespace travelsoft\currency\factory;
+namespace travelsoft\currency\interfaces;
 
 /**
  * Интерфейс фабрик
@@ -8,18 +8,13 @@ namespace travelsoft\currency\factory;
  * @author dimabresky
  * @copyright (c) 2017, travelsoft
  */
-abstract class AbstractFactory {
-
+abstract class Factory {
+        
     abstract public static function getInstance();
 
     public static function hashGeneration(array $parameters): string {
 
-        $str = '';
-        foreach ($parameters as $parameter) {
-            $str .= serialize($parameter);
-        }
-
-        return md5($str);
+        return md5(serialize($parameters));
     }
 
 }

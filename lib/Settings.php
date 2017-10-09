@@ -3,10 +3,6 @@
 namespace travelsoft\currency;
 
 use Bitrix\Main\Config\Option as options;
-use travelsoft\currency\Currency;
-use travelsoft\currency\Course;
-use travelsoft\currency\stores\Currencies;
-use travelsoft\currency\stores\Courses;
 
 /**
  * Класс настроек модуля
@@ -44,8 +40,8 @@ class Settings {
      * Возвращает количество десячичных знаков
      * @return string
      */
-    public static function formatDecimal(): string {
-        return (string) options::get("travelsoft.currency", "FORMAT_DECIMAL");
+    public static function formatDecimal(): int {
+        return (int) options::get("travelsoft.currency", "FORMAT_DECIMAL");
     }
 
     /**
@@ -70,41 +66,6 @@ class Settings {
      */
     public static function commissions(): array {
         return (array) \travelsoft\sta(options::get("travelsoft.currency", "COMMISSIONS"));
-    }
-
-    /**
-     * Возвращает объект валюты по-умолчанию
-     * @return Currency
-     */
-    public static function defaultCurrency(): Currency {
-
-        $arCurrencies = Currencies::get();
-        $arCourse = current(Courses::get(array("filter" => array("ID" => self::currentCourseId()))));
-
-        $arCommissions = self::commissions();
-
-        $currency = new Currency((string) $arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"], intVal($arCourse["UF_BASE_ID"]));
-
-        if (!empty($arCommissions)) {
-
-            foreach ($arCurrencies as $arCurrency) {
-
-                $value = $arCourse["UF_" . $arCurrency["UF_ISO"]];
-                if (!$arCourse["UF_BASE_ID"] !== $arCurrency["ID"] && $arCommissions[$arCurrency["UF_ISO"]] > 0) {
-                    # расчёт курса с комиссией
-                    $value = $value + $value * ($arCommissions[$arCurrency["UF_ISO"]] / 100);
-                }
-                $currency->addCourse($arCurrency["UF_ISO"], new Course((float) $value, (string) $arCourse["UF_DATE"]));
-            }
-        } else {
-        
-            foreach ($arCurrencies as $arCurrency) {
-                
-                $currency->addCourse($arCurrency["UF_ISO"], new Course((float) $arCourse["UF_" . $arCurrency["UF_ISO"]], (string) $arCourse["UF_DATE"]));
-            }
-        }
-
-        return $currency;
     }
 
 }

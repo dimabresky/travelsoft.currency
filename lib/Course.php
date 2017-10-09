@@ -2,25 +2,23 @@
 
 namespace travelsoft\currency;
 
-use travelsoft\currency\interfaces\Getter;
-
 /**
  * Класс объектов курса валют
  *
  * @author dimabresky
  * @copyright (c) 2017, travelsoft
  */
-class Course extends Getter {
+class Course {
 
     /**
      * @var float
      */
-    public $value = null;
+    protected $_value = null;
 
     /**
      * @var string
      */
-    public $date = null;
+    protected $_date = null;
 
     /**
      * @param float $value
@@ -35,6 +33,22 @@ class Course extends Getter {
             $this->setDate($date);
         }
     }
+    
+    /**
+     * @param string $name
+     * @return float|string
+     * @throws \Exception
+     */
+    public function __get($name) {
+        switch ($name) {
+            case "value":
+                return $this->_value;
+            case "date":
+                return $this->_date;
+            default:
+                throw new \Exception("Unknown parameter \"".$name."\"");
+        }
+    }
 
     /**
      * Устанавливает значение курса
@@ -46,7 +60,7 @@ class Course extends Getter {
         if ($value <= 0) {
             throw new \Exception(get_called_class() . ": The value of the exchange rate should be > 0");
         }
-        $this->value = $value;
+        $this->_value = $value;
     }
 
     /**
@@ -59,7 +73,7 @@ class Course extends Getter {
         if (preg_match("#^\d{2}\.\d{2}\.\d{4}\s\d{2}\:\d{2}\:\d{2}$#", $date) !== 1) {
             throw new \Exception(get_called_class() . ": The date of the course must match the format");
         }
-        $this->date = $date;
+        $this->_date = $date;
     }
 
 }

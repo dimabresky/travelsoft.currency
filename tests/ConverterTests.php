@@ -18,32 +18,35 @@ Bitrix\Main\Loader::includeModule("travelsoft.currency");
  */
 class ConverterTests extends PHPUnit\Framework\TestCase {
 
+    private $__decPoint;
+    private $__decimal;
+    private $__ssep;
     private $__converter;
 
     protected function setUp() {
-
-        $this->__converter = \travelsoft\currency\Converter::getInstance();
+        $this->__decPoint = travelsoft\currency\Settings::formatDecPoint();
+        $this->__decimal = travelsoft\currency\Settings::formatDecimal();
+        $this->__ssep = travelsoft\currency\Settings::formatSSep();
+        $this->__converter = travelsoft\currency\factory\Converter::getInstance(null, $this->__decimal, $this->__decPoint, $this->__ssep);
     }
 
     public function testConverter() {
-
-        $currency = new \travelsoft\currency\Currency("BYN");
-
-        $currency->addCourse("USD", new travelsoft\currency\Course(1.8));
-        $currency->addCourse("EUR", new travelsoft\currency\Course(2));
-        $currency->addCourse("RUB", new travelsoft\currency\Course(0.003));
-
-        $this->__converter->setCurrency($currency);
-
-        $this->assertEquals("1.00 USD", $this->__converter->convert(1.8, "BYN", "USD")->getResult());
-        $this->assertEquals("1.00 EUR", $this->__converter->convert(2, "BYN", "EUR")->getResult());
-        $this->assertEquals("1,000 RUB", $this->__converter->convert(0.003, "BYN", "RUB")->setDecimal(3)->setDecPoint(',')->getResult());
-
+        
+        $arCourses = travelsoft\currency\stores\Courses::getById(travelsoft\currency\Settings::currentCourseId());
+        
+        $this->assertEquals("1".$this->__decPoint."00 USD", $this->__converter->convert($arCourses['UF_USD'], "BYN", "USD")->getResult());
+        $this->assertEquals("1".$this->__decPoint."00 EUR", $this->__converter->convert($arCourses['UF_EUR'], "BYN", "EUR")->getResult());
+        $this->assertEquals("1".$this->__decPoint."00 RUB", $this->__converter->convert($arCourses['UF_RUB'], "BYN", "RUB")->getResult());
+        $this->assertEquals("1".$this->__decPoint."00 BYN", $this->__converter->convert(1, "BYN", "BYN")->getResult());
+        
         $array = $this->__converter->getResultLikeArray();
         $this->assertArrayHasKey("price", $array);
         $this->assertArrayHasKey("ISO", $array);
-        $this->assertEquals(1.000, $array["price"]);
-        $this->assertEquals("RUB", $array["ISO"]);
+        
+        $this->assertInstanceOf("\\travelsoft\\currency\\CuContainer", $this->__converter->getCuContainer());
+        $this->assertEquals(travelsoft\currency\Settings::formatDecPoint(), $this->__converter->getDecPoint());
+        $this->assertEquals(travelsoft\currency\Settings::formatDecimal(), $this->__converter->getDecimal());
+        
     }
 
 }
