@@ -10,7 +10,7 @@ namespace travelsoft\currency\factory;
  */
 class Currency extends \travelsoft\currency\interfaces\Factory{
         
-    public static function getInstance(int $courseId = null, array $commissions = null) : \travelsoft\currency\Currency{
+    public static function getInstance(int $courseId = null, array $commissions = null, string $iso = null) : \travelsoft\currency\Currency{
         
         static $instances = array();
         
@@ -21,14 +21,18 @@ class Currency extends \travelsoft\currency\interfaces\Factory{
         if ($commissions) {
             $commissions = \travelsoft\currency\Settings::commissions();
         }
-        
+
+        if (!$iso) {
+            $iso = (string) $arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"];
+        }
+
         $hash = parent::hashGeneration(array($courseId, $commissions));
         
         if (!$instances[$hash]) {
             $arCurrencies = \travelsoft\currency\stores\Currencies::get();
             $arCourse = current(\travelsoft\currency\stores\Courses::get(array("filter" => array("ID" => $courseId))));
 
-            $currency = new \travelsoft\currency\Currency((string) $arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"], intVal($arCourse["UF_BASE_ID"]));
+            $currency = new \travelsoft\currency\Currency($iso);//, intVal($arCourse["UF_BASE_ID"]));
 
             if (!empty($commissions)) {
 

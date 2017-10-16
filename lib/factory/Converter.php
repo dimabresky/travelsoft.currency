@@ -9,7 +9,7 @@ namespace travelsoft\currency\factory;
  */
 class Converter extends \travelsoft\currency\interfaces\Factory{
 
-    public static function getInstance (travelsoft\currency\CuContainer $cuContainer = null, int $decimal = null, string $decPoint = null, string $ssep = null) {
+    public static function getInstance (\travelsoft\currency\CuContainer $cuContainer = null, int $decimal = null, string $decPoint = null, string $ssep = null) {
         
         static $instances = array();
         
