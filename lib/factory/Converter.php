@@ -8,8 +8,16 @@ namespace travelsoft\currency\factory;
  * @copyright (c) 2017, travelsoft
  */
 class Converter extends \travelsoft\currency\interfaces\Factory{
-
-    public static function getInstance (\travelsoft\currency\CuContainer $cuContainer = null, int $decimal = null, string $decPoint = null, string $ssep = null) {
+    
+    /**
+     * @staticvar array $instances
+     * @param \travelsoft\currency\CuContainer $cuContainer
+     * @param int $decimal
+     * @param string $decPoint
+     * @param string $ssep
+     * @return \travelsoft\currency\Converter
+     */
+    public static function getInstance (\travelsoft\currency\CuContainer $cuContainer = null, int $decimal = null, string $decPoint = null, string $ssep = null) : \travelsoft\currency\Converter {
         
         static $instances = array();
         

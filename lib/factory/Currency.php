@@ -9,8 +9,15 @@ namespace travelsoft\currency\factory;
  * @copyright (c) 2017, travelsoft
  */
 class Currency extends \travelsoft\currency\interfaces\Factory{
-        
-    public static function getInstance(int $courseId = null, array $commissions = null, string $iso = null) : \travelsoft\currency\Currency{
+    
+    /**
+     * @staticvar array $instances
+     * @param int $courseId
+     * @param string $iso
+     * @param array $commissions
+     * @return \travelsoft\currency\Currency
+     */
+    public static function getInstance(int $courseId = null, string $iso = null, array $commissions = null) : \travelsoft\currency\Currency {
         
         static $instances = array();
         
