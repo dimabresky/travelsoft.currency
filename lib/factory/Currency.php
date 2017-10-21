@@ -12,37 +12,36 @@ class Currency extends \travelsoft\currency\interfaces\Factory{
     
     /**
      * @staticvar array $instances
-     * @param int $courseId
      * @param string $iso
+     * @param int $courseId
      * @param array $commissions
      * @return \travelsoft\currency\Currency
      */
-    public static function getInstance(int $courseId = null, string $iso = null, array $commissions = null) : \travelsoft\currency\Currency {
+    public static function getInstance(string $iso = null, int $courseId = null, array $commissions = null) : \travelsoft\currency\Currency {
         
-        static $instances = array();
+        static $instances = null;
         
-        if(!$courseId) {
-            $courseId = \travelsoft\currency\Settings::currentCourseId();
-        }
-        
-        if ($commissions) {
-            $commissions = \travelsoft\currency\Settings::commissions();
-        }
+        if (!$instances) {
+            
+            if(!$courseId) {
+                $courseId = \travelsoft\currency\Settings::currentCourseId();
+            }
 
-        if (!$iso) {
-            $iso = (string) $arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"];
-        }
+            if (!$commissions) {
+                $commissions = \travelsoft\currency\Settings::commissions();
+            }
 
-        $hash = parent::hashGeneration(array($courseId, $commissions));
+            if (!$iso) {
+                $iso = (string) $arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"];
+            }
         
-        if (!$instances[$hash]) {
             $arCurrencies = \travelsoft\currency\stores\Currencies::get();
             $arCourse = current(\travelsoft\currency\stores\Courses::get(array("filter" => array("ID" => $courseId))));
 
             $currency = new \travelsoft\currency\Currency($iso);//, intVal($arCourse["UF_BASE_ID"]));
 
             if (!empty($commissions)) {
-
+                
                 foreach ($arCurrencies as $arCurrency) {
 
                     $value = $arCourse["UF_" . $arCurrency["UF_ISO"]];
@@ -60,10 +59,10 @@ class Currency extends \travelsoft\currency\interfaces\Factory{
                 }
             }
             
-            $instances[$hash] = $currency;
+            $instances = $currency;
         }
 
-        return $instances[$hash];
+        return $instances;
         
     }
     

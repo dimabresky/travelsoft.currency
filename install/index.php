@@ -19,6 +19,9 @@ class travelsoft_currency extends CModule {
     protected $currency = array();
     protected $courses = array();
     protected $baseCurrencyId = null;
+    protected $componentsList = array(
+            "currencyswitch"
+        );
 
     function __construct() {
         $arModuleVersion = array();
@@ -287,6 +290,29 @@ class travelsoft_currency extends CModule {
         $function("", $HL_CR["NAME"] . "OnAfterDelete", $this->MODULE_ID, "travelsoft\\CREventsHandlers", "deleteCourseISOField");
         $function("", $HL_CO["NAME"] . "OnAfterAdd", $this->MODULE_ID, "travelsoft\\CREventsHandlers", "setCurrenctCourse");
     }
+    
+    public function copyFiles() {
+        
+        foreach ($this->componentsList as $componentName) {
+            CopyDirFiles(
+                $_SERVER["DOCUMENT_ROOT"]."/local/modules/".$this->MODULE_ID."/install/components/" .$this->namespaceFolder ."/" . $componentName,
+                $_SERVER["DOCUMENT_ROOT"]."/local/components/".$this->namespaceFolder . "/" . $componentName,
+                true, true
+            );
+        }
+        
+        
+    }
+    
+    public function deleteFiles() {
+        foreach ($this->componentsList as $componentName) {
+            DeleteDirFilesEx("/local/components/". $this->namespaceFolder . "/" . $componentName);
+        }
+        if(!glob($_SERVER["DOCUMENT_ROOT"]."/local/components/". $this->namespaceFolder ."/*")) {
+            DeleteDirFilesEx("/local/components/". $this->namespaceFolder);
+        }
+        return true;
+    }
 
     public function DoInstall() {
         try {
@@ -308,9 +334,11 @@ class travelsoft_currency extends CModule {
                 $this->setFormatOptions();
 
                 Option::set($this->MODULE_ID, 'COMMISSIONS', "");
-
+                
                 $this->eh("RegisterModuleDependences");
-
+                
+                $this->copyFiles();
+                
                 return true;
             }
 
@@ -334,7 +362,9 @@ class travelsoft_currency extends CModule {
         $this->unsetCurrencyStore();
 
         Option::delete($this->MODULE_ID, array('name' => 'COMMISSIONS'));
-
+        
+        $this->deleteFiles();
+        
         // unregister module
         ModuleManager::UnRegisterModule($this->MODULE_ID);
 

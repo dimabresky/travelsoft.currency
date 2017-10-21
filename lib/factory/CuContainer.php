@@ -11,20 +11,19 @@ namespace travelsoft\currency\factory;
 class CuContainer extends \travelsoft\currency\interfaces\Factory{
     
     /**
+     * @staticvar type $instances
      * @param \travelsoft\currency\Currency $currency
      * @return \travelsoft\currency\CuContainer
      */
-    public static function getInstance (\travelsoft\currency\Currency $currency = null) : \travelsoft\currency\CuContainer {
+    public static function getInstance (\travelsoft\currency\Currency $currency = null) : \travelsoft\currency\CuContainer{
        
-        static $instances = array();
+        static $instances = null;
         
-        if (!$currency) {
-            $currency = Currency::getInstance();
-        }
-                
-        $hash = parent::hashGeneration(array($currency));
-        
-        if (!$instances[$hash]) { // генерируем класс контейнера валют
+        if (!$instances) { // генерируем класс контейнера валют
+            
+            if (!$currency) {
+                $currency = Currency::getInstance();
+            }
             
             $arCourses = (array) $currency->courses;
             
@@ -50,10 +49,10 @@ class CuContainer extends \travelsoft\currency\interfaces\Factory{
                 $cuContainer->addCurrency($tmpCurrency);
             }
             
-            $instances[$hash] = $cuContainer;
+            $instances = $cuContainer;
         }
         
-        return $instances[$hash];
+        return $instances;
         
     }
 }

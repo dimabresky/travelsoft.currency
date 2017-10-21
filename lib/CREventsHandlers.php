@@ -59,7 +59,7 @@ class CREventsHandlers {
      */
     public static function saveISOBeforeDelete($arElement) {
 
-        \Bitrix\Main\Config\Option::set(self::$module_id, "ISO_SAVED", currency\stores\Currencies::getISObyId($arElement["ID"]));
+        $GLOBALS["ISO_SAVED"] = currency\stores\Currencies::getISObyId($arElement["ID"]);
     }
 
     /**
@@ -68,17 +68,16 @@ class CREventsHandlers {
      */
     public static function deleteCourseISOField() {
 
-        $ISO = \Bitrix\Main\Config\Option::get(self::$module_id, "ISO_SAVED");
         $HL_ID = \Bitrix\Main\Config\Option::get(self::$module_id, "COURSES_HL_ID");
-        if ($ISO && $HL_ID) {
+        if ($GLOBALS["ISO_SAVED"] && $HL_ID) {
 
             $oUserTypeEntity = new \CUserTypeEntity();
-            $arField = $oUserTypeEntity->GetList(array(), array("ENTITY_ID" => 'HLBLOCK_' . $HL_ID, "FIELD_NAME" => "UF_" . $ISO))->Fetch();
+            $arField = $oUserTypeEntity->GetList(array(), array("ENTITY_ID" => 'HLBLOCK_' . $HL_ID, "FIELD_NAME" => "UF_" . $GLOBALS["ISO_SAVED"]))->Fetch();
             if ($arField["ID"] > 0) {
                 $oUserTypeEntity->Delete($arField["ID"]);
             }
         }
-        \Bitrix\Main\Config\Option::delete("travelsoft.currency", array('name' => 'ISO_SAVED'));
+        unset($GLOBALS["ISO_SAVED"]);
     }
 
     /**

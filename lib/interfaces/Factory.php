@@ -11,10 +11,4 @@ namespace travelsoft\currency\interfaces;
 abstract class Factory {
         
     abstract public static function getInstance();
-
-    public static function hashGeneration(array $parameters): string {
-
-        return md5(serialize($parameters));
-    }
-
 }
