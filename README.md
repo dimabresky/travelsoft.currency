@@ -67,7 +67,7 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version-2.0
     //
     // Получаем валюту из нац. банка
     //
-    \travelsoft\currency\CurrencyImporterCurrencyImporter::importFromNationalBankRepablicOfBelarus()->convert(100, "BYN", "USD")->getResult();
+    \travelsoft\currency\Importer::fromNationalBankRepablicOfBelarus()->convert(100, "BYN", "USD")->getResult();
 
 ```
 

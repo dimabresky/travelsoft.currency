@@ -8,12 +8,12 @@ namespace travelsoft\currency;
  * @author dimabresky
  * @copyright (c) 2017, travelsoft
  */
-class CurrencyImporter {
+class Importer {
 
     /**
      * Импорт курсов валют из Национального Банка Республики Беларусь
      */
-    public static function importFromNationalBankRepublicOfBelarus() {
+    public static function fromNationalBankRepublicOfBelarus() {
 
         $now = time();
         $URL = "http://www.nbrb.by/API/ExRates/Rates?onDate=" . date('Y-m-d', $now) . "&Periodicity=0";
