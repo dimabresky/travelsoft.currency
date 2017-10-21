@@ -58,6 +58,18 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version 2.0
 
 ```
 
+Также модуль позволяет выгружать валюту из нац. банка РБ
+``````php
+
+    // При необходимости подключаем модуль
+    \Bitrix\Main\Loader::includeModule('travelsoft.booking');
+
+    //
+    // Получаем валюту из нац. банка
+    //
+    \travelsoft\currency\CurrencyImporterCurrencyImporter::importFromNationalBankRepablicOfBelarus()->convert(100, "BYN", "USD")->getResult();
+
+```
 
 
 
