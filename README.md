@@ -55,7 +55,6 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version 2.0
     // подробности смотреть в файле lib/functions.php модуля
     //
     \travelsoft\currency\factory\Converter::getInstance()->convert(100, "BYN", "USD")->getResult();
-
 ```
 
 Также модуль позволяет выгружать валюту из нац. банка РБ
@@ -68,7 +67,6 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version 2.0
     // Получаем валюту из нац. банка
     //
     \travelsoft\currency\CurrencyImporterCurrencyImporter::importFromNationalBankRepablicOfBelarus()->convert(100, "BYN", "USD")->getResult();
-
 ```
 
 
