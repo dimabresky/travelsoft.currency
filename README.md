@@ -10,7 +10,7 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version-2.0
 Затем необходимо в административной панели сайта перейти в Marketplace->Установленные решения
 и установить Модуль валюты
 
-![Шаг установки 1](https://github.com/dimabresky/travelsoft.currency/raw/dev/img/install_1.png)
+![Шаг установки 1](https://github.com/dimabresky/travelsoft.currency/raw/dev/img/install__1.png)
 
 Следующим шагом нужно указать ISO код национальной валюты (по-умолчанию BYN)
 и ISO коды остальных валют и их курсы и нажать кнопку далее
@@ -44,7 +44,7 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version-2.0
     //
     // Вызываем метод convert:
     // Первый параметр - значение для конвертации
-    // Второй параметр - iso код валюты из которой необходимо сконвертировать
+    // Второй параметр - ISO код валюты из которой необходимо сконвертировать
     // Третий параметр - ISO код валюты в которую необходимо сконвертировать. Если не указать,
     // то значение будет сконвертировано в текущую установленную валюту.
     // 
@@ -66,7 +66,7 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version-2.0
     //
     // Получаем валюту из нац. банка
     //
-    \travelsoft\currency\Importer::fromNationalBankRepablicOfBelarus()->convert(100, "BYN", "USD")->getResult();
+    \travelsoft\currency\Importer::fromNationalBankRepablicOfBelarus();
 
 ```
 
