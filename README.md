@@ -10,7 +10,7 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version-2.0
 Затем необходимо в административной панели сайта перейти в Marketplace->Установленные решения
 и установить Модуль валюты
 
-![Шаг установки 1](https://github.com/dimabresky/travelsoft.currency/raw/dev/img/install_1.png)
+![Шаг установки 1](https://github.com/dimabresky/travelsoft.currency/raw/dev/img/install__1.png)
 
 Следующим шагом нужно указать ISO код национальной валюты (по-умолчанию BYN)
 и ISO коды остальных валют и их курсы и нажать кнопку далее
