@@ -71,7 +71,7 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version-2.1
 
 ```
 
-Протестироно с 1С-Битрикс: Управление сайтом 17.0.x
+Протестировано с 1С-Битрикс: Управление сайтом 17.0.x
 
 
 
