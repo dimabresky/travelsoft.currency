@@ -23,7 +23,7 @@ class Importer {
 
         if (!$arCourse["ID"]) {
             # получение валюты на текущий день из нац.банка
-            $arImportCurrencyCourses = \Bitrix\Main\Web\Json::decode(file_get_contents($URL));
+            $arImportCurrencyCourses = json_decode(file_get_contents($URL), true);
             $arCurrencies = stores\Currencies::get();
             foreach ($arCurrencies as $arCurrency) {
                 $acceptableISO[$arCurrency["UF_ISO"]] = $arCurrency["ID"];
