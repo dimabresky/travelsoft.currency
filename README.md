@@ -5,7 +5,7 @@
 Для установки модуля необходимо скопировать папку модуля или склонировать репозиторий 
 в директорию /local/modules сайта командой
 ```
-git clone https://github.com/dimabresky/travelsoft.currency.git version-2.0
+git clone https://github.com/dimabresky/travelsoft.currency.git version-2.1
 ```
 Затем необходимо в административной панели сайта перейти в Marketplace->Установленные решения
 и установить Модуль валюты
