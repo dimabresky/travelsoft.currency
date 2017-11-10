@@ -30,14 +30,14 @@ class Currency extends \travelsoft\currency\interfaces\Factory{
             if (!$commissions) {
                 $commissions = \travelsoft\currency\Settings::commissions();
             }
-
-            if (!$iso) {
-                $iso = (string) $arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"];
-            }
         
             $arCurrencies = \travelsoft\currency\stores\Currencies::get();
             $arCourse = current(\travelsoft\currency\stores\Courses::get(array("filter" => array("ID" => $courseId))));
 
+			if (!$iso) {
+                $iso = (string) $arCurrencies[$arCourse["UF_BASE_ID"]]["UF_ISO"];
+            }
+			
             $currency = new \travelsoft\currency\Currency($iso);//, intVal($arCourse["UF_BASE_ID"]));
 
             if (!empty($commissions)) {
