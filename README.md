@@ -62,7 +62,7 @@ git clone https://github.com/dimabresky/travelsoft.currency.git version-2.1
 ```php
 
     // При необходимости подключаем модуль
-    \Bitrix\Main\Loader::includeModule('travelsoft.booking');
+    \Bitrix\Main\Loader::includeModule('travelsoft.currency');
 
     //
     // Получаем валюту из нац. банка
