@@ -295,7 +295,7 @@ class travelsoft_currency extends CModule {
         
         foreach ($this->componentsList as $componentName) {
             CopyDirFiles(
-                $_SERVER["DOCUMENT_ROOT"]."/local/modules/".$this->MODULE_ID."/install/components/" .$this->namespaceFolder ."/" . $componentName,
+                $_SERVER["DOCUMENT_ROOT"]."/local/modules/".$this->MODULE_ID."/install/components/" . $componentName,
                 $_SERVER["DOCUMENT_ROOT"]."/local/components/".$this->namespaceFolder . "/" . $componentName,
                 true, true
             );
