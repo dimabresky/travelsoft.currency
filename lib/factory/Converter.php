@@ -21,7 +21,9 @@ class Converter extends \travelsoft\currency\interfaces\Factory{
         
         static $instances = null;
         
-        if (!$instances) {
+        $hesh = md5(serialize(func_get_args()));
+        
+        if (!$instances[$hesh]) {
             if (!$cuContainer) {
                 $cuContainer = CuContainer::getInstance();
             }
@@ -39,9 +41,9 @@ class Converter extends \travelsoft\currency\interfaces\Factory{
             }
 
             // генерируем класс конвертера
-            $instances = new \travelsoft\currency\Converter($cuContainer, $decimal, $decPoint, $ssep);
+            $instances[$hesh] = new \travelsoft\currency\Converter($cuContainer, $decimal, $decPoint, $ssep);
         }
         
-        return $instances;
+        return $instances[$hesh];
     }
 }

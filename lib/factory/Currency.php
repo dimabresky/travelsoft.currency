@@ -21,7 +21,9 @@ class Currency extends \travelsoft\currency\interfaces\Factory{
         
         static $instances = null;
         
-        if (!$instances) {
+        $hesh = md5(serialize(func_get_args()));
+        
+        if (!$instances[$hesh]) {
             
             if(!$courseId) {
                 $courseId = \travelsoft\currency\Settings::currentCourseId();
@@ -59,10 +61,10 @@ class Currency extends \travelsoft\currency\interfaces\Factory{
                 }
             }
             
-            $instances = $currency;
+            $instances[$hesh] = $currency;
         }
 
-        return $instances;
+        return $instances[$hesh];
         
     }
     

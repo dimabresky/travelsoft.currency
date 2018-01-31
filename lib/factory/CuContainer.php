@@ -19,7 +19,9 @@ class CuContainer extends \travelsoft\currency\interfaces\Factory{
        
         static $instances = null;
         
-        if (!$instances) { // генерируем класс контейнера валют
+        $hesh = md5(serialize(func_get_args()));
+        
+        if (!$instances[$hesh]) { // генерируем класс контейнера валют
             
             if (!$currency) {
                 $currency = Currency::getInstance();
@@ -49,10 +51,10 @@ class CuContainer extends \travelsoft\currency\interfaces\Factory{
                 $cuContainer->addCurrency($tmpCurrency);
             }
             
-            $instances = $cuContainer;
+            $instances[$hesh] = $cuContainer;
         }
         
-        return $instances;
+        return $instances[$hesh];
         
     }
 }
