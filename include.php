@@ -13,7 +13,7 @@ $classes = array(
     "travelsoft\\currency\\Settings" => "lib/Settings.php",
     "travelsoft\\currency\\stores\\Courses" => "lib/stores/Courses.php",
     "travelsoft\\currency\\stores\\Currencies" => "lib/stores/Currencies.php",
-    "travelsoft\\currency\\CurrencyImporter" => "lib/CurrencyImporter.php",
+    "travelsoft\\currency\\Importer" => "lib/Importer.php",
     "travelsoft\\CREventsHandlers" => "lib/CREventsHandlers.php"
 );
 CModule::AddAutoloadClasses("travelsoft.currency", $classes);
