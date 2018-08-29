@@ -34,8 +34,8 @@ class travelsoft_currency extends CModule {
         }
         $this->MODULE_NAME = Loc::getMessage("TRAVELSOFT_CURRENCY_MODULE_NAME");
         $this->MODULE_DESCRIPTION = Loc::getMessage("TRAVELSOFT_CURRENCY_MODULE_DESC");
-        $this->PARTNER_NAME = "dimabresky";
-        $this->PARTNER_URI = "https://github.com/dimabresky/";
+        $this->PARTNER_NAME = "TRAVELSOFT";
+        $this->PARTNER_URI = "http://travelsoft.by/";
 
         Loader::includeModule('highloadblock');
     }
