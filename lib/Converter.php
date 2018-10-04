@@ -49,7 +49,7 @@ class Converter {
     public function __construct(CuContainer $cuContainer, int $decimal = null, string $decPoint = '.', bool $ssep = false) {
         
         $this->_cuContainer = $cuContainer;
-        $this->_decimal = $decimal > 0 ? $decimal : 2;
+        $this->_decimal = $decimal >= 0 ? $decimal : 2;
         $this->_decPoint = $decPoint;
         $this->_ssep = $ssep;
         
