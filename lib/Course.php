@@ -21,19 +21,30 @@ class Course {
     protected $_date = null;
 
     /**
+     * 
+     * @var float
+     */
+    protected $comission = null;
+
+    /**
      * @param float $value
      * @param string $date
+     * @param float $comission
      * @throws \Exception
      */
-    public function __construct(float $value, string $date = null) {
+    public function __construct(float $value, string $date = null, $comission = null) {
 
         $this->setValue($value);
 
         if ($date) {
             $this->setDate($date);
         }
+
+        if ($comission) {
+            $this->comission = $comission;
+        }
     }
-    
+
     /**
      * @param string $name
      * @return float|string
@@ -45,8 +56,13 @@ class Course {
                 return $this->_value;
             case "date":
                 return $this->_date;
+            case "comission":
+                return $this->comission;
+            case "sourceValue":
+                $cval = $this->comission / 100;
+                return $this->_value / (1 + $cval);
             default:
-                throw new \Exception("Unknown parameter \"".$name."\"");
+                throw new \Exception("Unknown parameter \"" . $name . "\"");
         }
     }
 
@@ -74,6 +90,14 @@ class Course {
             throw new \Exception(get_called_class() . ": The date of the course must match the format");
         }
         $this->_date = $date;
+    }
+
+    /**
+     * 
+     * @param float $comission
+     */
+    function setComission($comission = null) {
+        $this->comission = $comission;
     }
 
 }
