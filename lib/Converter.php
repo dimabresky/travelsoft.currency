@@ -9,7 +9,7 @@ namespace travelsoft\currency;
  * @copyright (c) 2017, travelsoft
  */
 class Converter {
-    
+
     /**
      * @var \travelsoft\currency\CuContainer
      */
@@ -39,7 +39,7 @@ class Converter {
      * @var boolean
      */
     protected $_ssep = false;
-    
+
     /**
      * @param \travelsoft\currency\CuContainer $cuContainer
      * @param int $decimal
@@ -47,12 +47,11 @@ class Converter {
      * @param bool $ssep
      */
     public function __construct(CuContainer $cuContainer, int $decimal = null, string $decPoint = '.', bool $ssep = false) {
-        
+
         $this->_cuContainer = $cuContainer;
         $this->_decimal = $decimal >= 0 ? $decimal : 2;
         $this->_decPoint = $decPoint;
         $this->_ssep = $ssep;
-        
     }
 
     /**
@@ -64,14 +63,15 @@ class Converter {
      * @throws \Exception
      */
     public function convert(float $price, string $in, string $out = null) {
-
+        
         if ($price <= 0) {
 
             throw new \Exception(get_called_class() . ": Price must be > 0");
         }
 
-        $currencyIn = $this->_findCurrency($in);
-        if (!$currencyIn->ISO) {
+        $currencyOut = $this->_findCurrency($out);
+
+        if (!$currencyOut->ISO) {
 
             throw new \Exception(get_called_class() . ": The currency from which we need convert is not found");
         }
@@ -80,14 +80,14 @@ class Converter {
 
             $out = $this->_cuContainer->currentIso;
         } else {
-            
-            if (!$currencyIn->courses->{$out}->value) {
+
+            if (!$currencyOut->courses->{$in}->value) {
 
                 throw new \Exception(get_called_class() . ": The currency in which we convert is not found");
             }
         }
         
-        $this->_value = (float) $price / $currencyIn->courses->{$out}->value;
+        $this->_value = (float) $price * $currencyOut->courses->{$in}->value;
         $this->_ISO = (string) $out;
         return $this;
     }
@@ -110,31 +110,31 @@ class Converter {
 
         return array("price" => $this->_value, "ISO" => $this->_ISO);
     }
-    
+
     /**
      * Возвращает cuContainer
      * @return \travelsoft\currency\CuContainer
      */
-    public function getCuContainer () : CuContainer {
+    public function getCuContainer(): CuContainer {
         return $this->_cuContainer;
     }
-    
+
     /**
      * Возвращает количество знаков после запятой
      * @return int
      */
-    public function getDecimal () : int {
+    public function getDecimal(): int {
         return $this->_decimal;
     }
-    
+
     /**
      * Возвращает разделитель дробной и целой части
      * @return string
      */
-    public function getDecPoint () : string{
+    public function getDecPoint(): string {
         return $this->_decPoint;
     }
-    
+
     /**
      * Возвращает объект валюты ISO коду
      * @param string $ISO
